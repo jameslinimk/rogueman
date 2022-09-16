@@ -1,2 +1,2 @@
 pub(crate) mod player;
-pub(crate) mod rect;
+pub(crate) mod shapes;

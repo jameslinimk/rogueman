@@ -1,8 +1,10 @@
-use macroquad::color::WHITE;
-use macroquad::input::is_key_down;
+use macroquad::color::{BLUE, WHITE};
+use macroquad::input::{is_key_down, mouse_position};
+use macroquad::shapes::draw_line;
 use macroquad::time::get_frame_time;
+use macroquad::window::{screen_height, screen_width};
 use crate::{KeyCode, Object};
-use crate::scenes::objects::rect::Rect;
+use crate::scenes::objects::shapes::rect::Rect;
 
 pub(crate) struct Player {
     rect: Rect,
@@ -32,5 +34,20 @@ impl Object for Player {
 
     fn draw(&mut self) {
         self.rect.draw(WHITE);
+
+        let mouse_pos = mouse_position();
+
+        // Extend line by length
+        let length = screen_height() + screen_width();
+        let alpha = (mouse_pos.1 - self.rect.get_center().y).atan2(mouse_pos.0 - self.rect.get_center().x);
+
+        draw_line(
+            self.rect.get_center().x,
+            self.rect.get_center().y,
+            mouse_pos.0 + length * alpha.cos(),
+            mouse_pos.1 + length * alpha.sin(),
+            2_f32,
+            BLUE
+        );
     }
 }
