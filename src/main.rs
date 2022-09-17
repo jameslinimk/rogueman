@@ -20,7 +20,7 @@ async fn main() {
     let mut scene = GameScene::new();
 
     loop {
-        clear_background(RED);
+        clear_background(BLACK);
 
         scene.update();
         scene.draw();
