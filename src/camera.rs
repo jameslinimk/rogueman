@@ -1,15 +1,17 @@
 use std::borrow::BorrowMut;
 use macroquad::math::{Vec2, vec2};
 
-static mut CAMERA: Option<Camera> = None;
+static mut _CAMERA: Option<Camera> = None;
 
-pub(crate) unsafe fn get_camera() -> &'static mut Camera {
-    if CAMERA.is_none() { CAMERA = Option::from(Camera::new()) }
-    return CAMERA.as_mut().unwrap()
+pub(crate) fn CAMERA() -> &'static mut Camera {
+    unsafe {
+        if _CAMERA.is_none() { _CAMERA = Option::from(Camera::new()) }
+        return _CAMERA.as_mut().unwrap()
+    }
 }
 
 pub(crate) struct Camera {
-    follow: Vec2
+    pub(crate) follow: Vec2
 }
 impl Camera {
     pub fn new() -> Camera {
@@ -18,7 +20,11 @@ impl Camera {
         }
     }
 
-    pub fn set_follow(&mut self, follow: Vec2) {
-        self.follow = follow;
+    pub fn fx(&self, x: f32) -> f32 {
+        return x - self.follow.x
+    }
+
+    pub fn fy(&self, y: f32) -> f32 {
+        return y - self.follow.y
     }
 }

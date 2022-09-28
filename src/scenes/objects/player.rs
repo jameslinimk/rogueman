@@ -3,9 +3,10 @@ use macroquad::input::{is_key_down, mouse_position};
 use macroquad::shapes::draw_line;
 use macroquad::time::get_frame_time;
 use macroquad::window::{screen_height, screen_width};
-use crate::{GameScene, KeyCode, Object};
+use crate::{GAME, GameScene, KeyCode, Object};
 use crate::scenes::objects::shapes::rect::Rect;
 
+#[derive(Debug)]
 pub(crate) struct Player {
     rect: Rect,
     speed: f32
@@ -14,7 +15,7 @@ impl Player {
     pub fn new() -> Player {
         Player {
             rect: Rect::new_center(0_f32, 0_f32, 30_f32, 30_f32),
-            speed: 25_f32
+            speed: 2.5
         }
     }
 }
@@ -29,10 +30,19 @@ impl Player {
         if is_key_down(KeyCode::D) { hspd += 1.0 }
 
         // Band-aid patch for diagonal movement
-        let dia = if hspd != 0_f32 && vspd != 0_f32 { 0.707_f32 } else { 1.0 };
+        let dia = if hspd != 0.0 && vspd != 0.0 { 0.707 } else { 1.0 };
 
-        self.rect.pos.x += hspd * self.speed * get_frame_time() * 10.0 * dia;
-        self.rect.pos.y += vspd * self.speed * get_frame_time() * 10.0 * dia;
+        hspd *= self.speed * get_frame_time() * 100.0 * dia;
+        vspd *= self.speed * get_frame_time() * 100.0 * dia;
+
+        for wall in &GAME().walls {
+            if self.rect.touches(wall) {
+                println!("Touches!")
+            }
+        }
+
+        self.rect.pos.x += hspd;
+        self.rect.pos.y += vspd;
     }
 
     pub fn draw(&mut self) {
@@ -49,8 +59,8 @@ impl Player {
             self.rect.get_center().y,
             mouse_pos.0 + length * alpha.cos(),
             mouse_pos.1 + length * alpha.sin(),
-            2_f32,
+            2.0,
             BLUE
-        );
+        )
     }
 }

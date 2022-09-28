@@ -3,6 +3,7 @@ use macroquad::math::Vec2;
 use macroquad::shapes::draw_rectangle;
 use crate::{GameScene, vec2};
 
+#[derive(Debug)]
 pub (crate) struct Rect {
     pub(crate) pos: Vec2,
     pub(crate) width: f32,
@@ -40,8 +41,8 @@ impl Rect {
         draw_rectangle(self.pos.x, self.pos.y, self.width, self.height, color);
     }
 
-    pub fn touches(&self, rect: Rect) -> bool {
-        self.pos.x < rect.pos.x ||
+    pub fn touches(&self, rect: &Rect) -> bool {
+        return self.pos.x < rect.pos.x ||
             self.pos.y < rect.pos.y ||
             self.pos.x - self.width > rect.pos.x - rect.width ||
             self.pos.y - self.height > self.pos.y - rect.height

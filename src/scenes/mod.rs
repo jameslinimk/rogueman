@@ -1,3 +1,3 @@
 pub(crate) mod game;
-pub(crate) mod scene;
+pub(crate) mod object;
 pub(crate) mod objects;
