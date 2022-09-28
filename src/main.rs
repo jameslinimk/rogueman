@@ -3,7 +3,7 @@ mod camera;
 
 use macroquad::prelude::*;
 use crate::scenes::game::GameScene;
-use crate::scenes::object::Object;
+use crate::scenes::scene::Object;
 
 fn config() -> Conf {
     Conf {
@@ -20,8 +20,6 @@ async fn main() {
     let mut scene = GameScene::new();
 
     loop {
-        clear_background(RED);
-
         scene.update();
         scene.draw();
 

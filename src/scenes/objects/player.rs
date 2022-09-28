@@ -3,7 +3,7 @@ use macroquad::input::{is_key_down, mouse_position};
 use macroquad::shapes::draw_line;
 use macroquad::time::get_frame_time;
 use macroquad::window::{screen_height, screen_width};
-use crate::{KeyCode, Object};
+use crate::{GameScene, KeyCode, Object};
 use crate::scenes::objects::shapes::rect::Rect;
 
 pub(crate) struct Player {
@@ -18,8 +18,8 @@ impl Player {
         }
     }
 }
-impl Object for Player {
-    fn update(&mut self) {
+impl Player {
+    pub fn update(&mut self) {
         let mut hspd = 0_f32;
         let mut vspd = 0_f32;
 
@@ -28,11 +28,14 @@ impl Object for Player {
         if is_key_down(KeyCode::A) { hspd -= 1.0 }
         if is_key_down(KeyCode::D) { hspd += 1.0 }
 
-        self.rect.pos.x += hspd * self.speed * get_frame_time() * 10.0;
-        self.rect.pos.y += vspd * self.speed * get_frame_time() * 10.0;
+        // Band-aid patch for diagonal movement
+        let dia = if hspd != 0_f32 && vspd != 0_f32 { 0.707_f32 } else { 1.0 };
+
+        self.rect.pos.x += hspd * self.speed * get_frame_time() * 10.0 * dia;
+        self.rect.pos.y += vspd * self.speed * get_frame_time() * 10.0 * dia;
     }
 
-    fn draw(&mut self) {
+    pub fn draw(&mut self) {
         self.rect.draw(WHITE);
 
         let mouse_pos = mouse_position();

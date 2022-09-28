@@ -1,7 +1,7 @@
 use macroquad::color::Color;
 use macroquad::math::Vec2;
 use macroquad::shapes::draw_rectangle;
-use crate::vec2;
+use crate::{GameScene, vec2};
 
 pub (crate) struct Rect {
     pub(crate) pos: Vec2,

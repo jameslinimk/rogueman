@@ -1,28 +1,27 @@
+use std::borrow::BorrowMut;
+use macroquad::color::{BLACK};
+use macroquad::window::clear_background;
 use crate::Object;
 use crate::scenes::objects::player::Player;
 
-pub(crate)  struct GameScene {
-    objects: Vec<Box<dyn Object>>
+pub(crate) struct GameScene {
+    player: Player
 }
 impl GameScene {
     pub fn new() -> GameScene {
-        let mut scene = GameScene {
-            objects: Vec::new()
-        };
-
-        scene.objects.push(Box::new(Player::new()));
-
-        return scene;
+        GameScene {
+            player: Player::new()
+        }
     }
 }
 impl Object for GameScene {
     fn update(&mut self) {
+        self.player.update();
     }
 
     fn draw(&mut self) {
-        for obj in &mut self.objects {
-            obj.update();
-            obj.draw();
-        };
+        clear_background(BLACK);
+
+        self.player.draw();
     }
 }
