@@ -1,1 +1,2 @@
-- Make the game a static mut (look at camera.rs)
+- Camera
+- Better collision
