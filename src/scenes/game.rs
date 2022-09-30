@@ -1,5 +1,5 @@
 
-use macroquad::color::{BLACK, WHITE};
+use macroquad::color::{BLACK, WHITE, YELLOW};
 use macroquad::window::clear_background;
 
 use crate::Object;

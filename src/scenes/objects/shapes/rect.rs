@@ -37,31 +37,38 @@ impl Rect {
         self.pos.y = y - self.height / 2.0;
     }
 
-    pub fn get_bottom_right(&self) -> Vec2 {
-        return vec2(self.pos.x + self.width, self.pos.y + self.height)
+    pub fn get_top(&self) -> f32 {
+        return self.pos.y;
+    }
+    pub fn get_bottom(&self) -> f32 {
+        return self.pos.y + self.height;
+    }
+    pub fn get_right(&self) -> f32 {
+        return self.pos.x + self.width;
+    }
+    pub fn get_left(&self) -> f32 {
+        return self.pos.x;
     }
 
+    pub fn set_top(&mut self, top: f32) {
+        self.pos.y = top;
+    }
+    pub fn set_bottom(&mut self, bottom: f32) {
+        self.pos.y = bottom - self.height;
+    }
+    pub fn set_right(&mut self, right: f32) {
+        self.pos.x = right - self.width;
+    }
+    pub fn set_left(&mut self, left: f32) {
+        self.pos.x = left;
+    }
+    
     pub fn touches(&self, rect: &Rect) -> bool {
-        /*
-        println!("1: {} {} {}", self.pos.x <= rect.get_bottom_right().x, self.pos.x, rect.get_bottom_right().x);
-        println!();
-        println!("2: {} {} {}", self.get_bottom_right().x >= rect.pos.x, self.get_bottom_right().x, rect.pos.y);
-        println!();
-        println!("3: {} {} {}", self.pos.y >= rect.get_bottom_right().y, self.pos.y, rect.get_bottom_right().y);
-        println!();
-        println!("4: {} {} {}", self.get_bottom_right().y <= rect.pos.y, self.get_bottom_right().y, rect.pos.y);
-
-        println!("\n{:?}\n{:?}", self, rect);
-        if touches {
-            println!("TOUCHES!");
-        }
-        */
-
         return
-            self.pos.x <= rect.get_bottom_right().x &&
-            self.get_bottom_right().x >= rect.pos.x &&
-            self.pos.y <= rect.get_bottom_right().y &&
-            self.get_bottom_right().y >= rect.pos.y;
+            self.pos.x <= rect.get_right() &&
+            self.get_right() >= rect.pos.x &&
+            self.pos.y <= rect.get_bottom() &&
+            self.get_bottom() >= rect.pos.y;
     }
 
     pub fn draw(&self, color: Color) {
