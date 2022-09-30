@@ -1,21 +1,21 @@
+use crate::scenes::objects::shapes::rect::Rect;
+use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::{is_key_down, mouse_position};
 use macroquad::shapes::draw_line;
 use macroquad::time::get_frame_time;
 use macroquad::window::{screen_height, screen_width};
-use crate::{GAME, KeyCode};
-use crate::scenes::objects::shapes::rect::Rect;
 
 #[derive(Debug)]
 pub(crate) struct Player {
     rect: Rect,
-    speed: f32
+    speed: f32,
 }
 impl Player {
     pub fn new() -> Player {
         Player {
             rect: Rect::new_center(0.0, 0.0, 30.0, 30.0),
-            speed: 2.5
+            speed: 2.5,
         }
     }
 }
@@ -24,22 +24,32 @@ impl Player {
         let mut hspd = 0.0;
         let mut vspd = 0.0;
 
-        if is_key_down(KeyCode::W) { vspd -= 1.0 }
-        if is_key_down(KeyCode::S) { vspd += 1.0 }
-        if is_key_down(KeyCode::A) { hspd -= 1.0 }
-        if is_key_down(KeyCode::D) { hspd += 1.0 }
+        if is_key_down(KeyCode::W) {
+            vspd -= 1.0
+        }
+        if is_key_down(KeyCode::S) {
+            vspd += 1.0
+        }
+        if is_key_down(KeyCode::A) {
+            hspd -= 1.0
+        }
+        if is_key_down(KeyCode::D) {
+            hspd += 1.0
+        }
 
         // Band-aid patch for diagonal movement
-        let dia = if hspd != 0.0 && vspd != 0.0 { 0.707 } else { 1.0 };
+        let dia = if hspd != 0.0 && vspd != 0.0 {
+            0.707
+        } else {
+            1.0
+        };
 
         hspd *= self.speed * get_frame_time() * 100.0 * dia;
         vspd *= self.speed * get_frame_time() * 100.0 * dia;
 
         // Collision detection
-        let og_pos = self.rect.pos;
-
         for wall in &GAME().walls {
-            self.rect.pos.x = og_pos.x + hspd;
+            self.rect.pos.x += hspd;
             if self.rect.touches(wall) {
                 if self.rect.pos.x > wall.pos.x {
                     self.rect.set_left(wall.get_right());
@@ -48,7 +58,7 @@ impl Player {
                 }
             }
 
-            self.rect.pos.y = og_pos.y + vspd;
+            self.rect.pos.y += vspd;
             if self.rect.touches(wall) {
                 if self.rect.pos.y > wall.pos.y {
                     self.rect.set_top(wall.get_bottom());
@@ -66,7 +76,8 @@ impl Player {
 
         // Extend line by length
         let length = screen_height() + screen_width();
-        let alpha = (mouse_pos.1 - self.rect.get_center().y).atan2(mouse_pos.0 - self.rect.get_center().x);
+        let alpha =
+            (mouse_pos.1 - self.rect.get_center().y).atan2(mouse_pos.0 - self.rect.get_center().x);
 
         draw_line(
             self.rect.get_center().x,
@@ -74,7 +85,7 @@ impl Player {
             mouse_pos.0 + length * alpha.cos(),
             mouse_pos.1 + length * alpha.sin(),
             2.0,
-            BLUE
+            BLUE,
         )
     }
 }

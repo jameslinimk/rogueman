@@ -1,13 +1,13 @@
+use crate::vec2;
 use macroquad::color::Color;
 use macroquad::math::Vec2;
 use macroquad::shapes::draw_rectangle;
-use crate::{vec2};
 
 #[derive(Debug, Copy, Clone)]
-pub (crate) struct Rect {
+pub(crate) struct Rect {
     pub(crate) pos: Vec2,
     pub(crate) width: f32,
-    pub(crate) height: f32
+    pub(crate) height: f32,
 }
 impl Rect {
     /// Create a new rect from top-left point
@@ -15,7 +15,7 @@ impl Rect {
         Rect {
             pos: vec2(x, y),
             width,
-            height
+            height,
         }
     }
 
@@ -24,12 +24,15 @@ impl Rect {
         Rect {
             pos: vec2(x - width / 2.0, y - width / 2.0),
             width,
-            height
+            height,
         }
     }
 
     pub fn get_center(&self) -> Vec2 {
-        return vec2(self.pos.x + self.width / 2.0, self.pos.y + self.height / 2.0);
+        return vec2(
+            self.pos.x + self.width / 2.0,
+            self.pos.y + self.height / 2.0,
+        );
     }
 
     pub fn set_center(&mut self, x: f32, y: f32) {
@@ -62,13 +65,12 @@ impl Rect {
     pub fn set_left(&mut self, left: f32) {
         self.pos.x = left;
     }
-    
+
     pub fn touches(&self, rect: &Rect) -> bool {
-        return
-            self.pos.x <= rect.get_right() &&
-            self.get_right() >= rect.pos.x &&
-            self.pos.y <= rect.get_bottom() &&
-            self.get_bottom() >= rect.pos.y;
+        return self.pos.x < rect.get_right()
+            && self.get_right() > rect.pos.x
+            && self.pos.y < rect.get_bottom()
+            && self.get_bottom() > rect.pos.y;
     }
 
     pub fn draw(&self, color: Color) {

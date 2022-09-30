@@ -1,10 +1,10 @@
-mod scenes;
 mod camera;
+mod scenes;
 
-use macroquad::prelude::*;
 use crate::camera::CAMERA;
-use crate::scenes::game::{GAME};
+use crate::scenes::game::GAME;
 use crate::scenes::object::Object;
+use macroquad::prelude::*;
 
 fn config() -> Conf {
     Conf {
