@@ -18,7 +18,7 @@ fn config() -> Conf {
 
 #[macroquad::main(config)]
 async fn main() {
-    CAMERA().update_camera();
+    CAMERA().init_camera();
 
     loop {
         GAME().update();

@@ -1,3 +1,4 @@
+use crate::camera::{adj_mouse_pos, CAMERA};
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
@@ -44,8 +45,9 @@ impl Player {
             1.0
         };
 
-        hspd *= self.speed * get_frame_time() * 100.0 * dia;
-        vspd *= self.speed * get_frame_time() * 100.0 * dia;
+        let ft = get_frame_time();
+        hspd *= self.speed * ft * 100.0 * dia;
+        vspd *= self.speed * ft * 100.0 * dia;
 
         // Collision detection
         for wall in &GAME().walls {
@@ -67,12 +69,14 @@ impl Player {
                 }
             }
         }
+
+        CAMERA().set_target(self.rect.get_center());
     }
 
     pub fn draw(&mut self) {
         self.rect.draw(WHITE);
 
-        let mouse_pos = mouse_position();
+        let mouse_pos = adj_mouse_pos();
 
         // Extend line by length
         let length = screen_height() + screen_width();

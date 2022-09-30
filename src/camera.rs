@@ -1,6 +1,7 @@
 use macroquad::camera::{set_camera, Camera2D};
 use macroquad::math::{vec2, Vec2};
-use macroquad::prelude::{screen_height, screen_width};
+use macroquad::prelude::{mouse_position, screen_height, screen_width};
+use macroquad::time::get_frame_time;
 
 static mut _CAMERA: Option<Camera> = None;
 
@@ -14,8 +15,18 @@ pub(crate) fn CAMERA() -> &'static mut Camera {
     }
 }
 
+/// Adjusted mouse position for the current camera
+pub(crate) fn adj_mouse_pos() -> (f32, f32) {
+    let mouse_pos = mouse_position();
+    return (
+        mouse_pos.0 - (screen_width() / 2.0 - CAMERA().camera.target.x).abs(),
+        mouse_pos.1 - (screen_height() / 2.0 - CAMERA().camera.target.y).abs(),
+    );
+}
+
 pub(crate) struct Camera {
-    camera: Camera2D,
+    pub camera: Camera2D,
+    pub go_to: Vec2,
 }
 impl Camera {
     pub fn new() -> Camera {
@@ -25,15 +36,20 @@ impl Camera {
                 target: vec2(screen_width() / 2.0, screen_height() / 2.0),
                 ..Default::default()
             },
+            go_to: vec2(screen_width() / 2.0, screen_height() / 2.0),
         }
     }
 
-    pub fn update_camera(&mut self) {
+    pub fn init_camera(&mut self) {
         set_camera(&self.camera);
     }
 
     pub fn set_target(&mut self, target: Vec2) {
-        self.camera.target = target;
-        self.update_camera();
+        self.go_to = target;
+    }
+
+    pub fn update(&mut self) {
+        let pan_speed = 5.0 * get_frame_time();
+        // Move to pan_speed
     }
 }
