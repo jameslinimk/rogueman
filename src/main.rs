@@ -5,6 +5,7 @@ mod util;
 use crate::camera::CAMERA;
 use crate::scenes::game::GAME;
 use crate::scenes::object::Object;
+use crate::util::ease_in_out;
 use macroquad::prelude::*;
 
 fn config() -> Conf {

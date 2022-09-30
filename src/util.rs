@@ -41,11 +41,16 @@ pub(crate) fn distance(p1: Vec2, p2: Vec2) -> f32 {
     return ((p1.x - p2.x).powf(2.0) + (p1.y - p2.y).powf(2.0)).sqrt();
 }
 
-pub(crate) fn easeInOut(value: f32) -> {
-    // return x === 0
-    // ? 0
-    // : x === 1
-    // ? 1
-    // : x < 0.5 ? Math.pow(2, 20 * x - 10) / 2
-    // : (2 - Math.pow(2, -20 * x + 10)) / 2;
+pub(crate) fn ease_in_out(x: f32) -> f32 {
+    return -((PI * x).cos() - 1.0) / 2.0;
+
+    // if x <= 0.0 || x >= 1.0 {
+    //     return x.clamp(0.0, 1.0);
+    // }
+
+    // if x < 0.5 {
+    //     return 2_f32 * x.powf(2.0);
+    // }
+
+    // return 1.0 - (-2.0 * x + 2.0).powf(2.0) / 2.0;
 }
