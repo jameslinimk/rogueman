@@ -1,5 +1,6 @@
 mod camera;
 mod scenes;
+mod util;
 
 use crate::camera::CAMERA;
 use crate::scenes::game::GAME;
@@ -18,7 +19,7 @@ fn config() -> Conf {
 
 #[macroquad::main(config)]
 async fn main() {
-    CAMERA().init_camera();
+    CAMERA().update_camera();
 
     loop {
         GAME().update();

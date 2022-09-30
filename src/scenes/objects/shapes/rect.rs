@@ -27,6 +27,9 @@ impl Rect {
             height,
         }
     }
+    pub fn new_center_vec(center: Vec2, width: f32, height: f32) -> Rect {
+        return Rect::new_center(center.x, center.y, width, height);
+    }
 
     pub fn get_center(&self) -> Vec2 {
         return vec2(
@@ -38,6 +41,10 @@ impl Rect {
     pub fn set_center(&mut self, x: f32, y: f32) {
         self.pos.x = x - self.width / 2.0;
         self.pos.y = y - self.height / 2.0;
+    }
+
+    pub fn set_center_vec(&mut self, center: Vec2) {
+        self.set_center(center.x, center.y);
     }
 
     pub fn get_top(&self) -> f32 {

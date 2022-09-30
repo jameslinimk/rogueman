@@ -1,22 +1,23 @@
-use crate::camera::{adj_mouse_pos, CAMERA};
+use crate::camera::CAMERA;
 use crate::scenes::objects::shapes::rect::Rect;
+use crate::util::adj_mouse_pos;
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
-use macroquad::input::{is_key_down, mouse_position};
+use macroquad::input::is_key_down;
 use macroquad::shapes::draw_line;
 use macroquad::time::get_frame_time;
 use macroquad::window::{screen_height, screen_width};
 
 #[derive(Debug)]
 pub(crate) struct Player {
-    rect: Rect,
+    pub rect: Rect,
     speed: f32,
 }
 impl Player {
     pub fn new() -> Player {
         Player {
             rect: Rect::new_center(0.0, 0.0, 30.0, 30.0),
-            speed: 2.5,
+            speed: 250.0,
         }
     }
 }
@@ -46,8 +47,8 @@ impl Player {
         };
 
         let ft = get_frame_time();
-        hspd *= self.speed * ft * 100.0 * dia;
-        vspd *= self.speed * ft * 100.0 * dia;
+        hspd *= self.speed * ft * dia;
+        vspd *= self.speed * ft * dia;
 
         // Collision detection
         for wall in &GAME().walls {

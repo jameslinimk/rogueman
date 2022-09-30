@@ -1,7 +1,9 @@
 use macroquad::camera::{set_camera, Camera2D};
 use macroquad::math::{vec2, Vec2};
-use macroquad::prelude::{mouse_position, screen_height, screen_width};
+use macroquad::prelude::{screen_height, screen_width};
 use macroquad::time::get_frame_time;
+
+use crate::util::{angle, distance, project};
 
 static mut _CAMERA: Option<Camera> = None;
 
@@ -13,15 +15,6 @@ pub(crate) fn CAMERA() -> &'static mut Camera {
         }
         return _CAMERA.as_mut().unwrap();
     }
-}
-
-/// Adjusted mouse position for the current camera
-pub(crate) fn adj_mouse_pos() -> (f32, f32) {
-    let mouse_pos = mouse_position();
-    return (
-        mouse_pos.0 - (screen_width() / 2.0 - CAMERA().camera.target.x).abs(),
-        mouse_pos.1 - (screen_height() / 2.0 - CAMERA().camera.target.y).abs(),
-    );
 }
 
 pub(crate) struct Camera {
@@ -40,7 +33,7 @@ impl Camera {
         }
     }
 
-    pub fn init_camera(&mut self) {
+    pub fn update_camera(&mut self) {
         set_camera(&self.camera);
     }
 
@@ -49,7 +42,18 @@ impl Camera {
     }
 
     pub fn update(&mut self) {
-        let pan_speed = 5.0 * get_frame_time();
-        // Move to pan_speed
+        let dis = distance(self.camera.target, self.go_to);
+        // let max_increase = (screen_width().powf(2.0) + screen_height().powf(2.0)).sqrt() / 2.0;
+        let max_increase = screen_width().max(screen_height()) / 2.0;
+        let ratio = dis / max_increase;
+
+        let pan_speed = (150.0 + 200.0 * ratio) * get_frame_time();
+        println!("{}", ratio);
+
+        if dis > pan_speed {
+            let angle = angle(self.camera.target, self.go_to);
+            self.camera.target = project(self.camera.target, angle, pan_speed);
+            self.update_camera();
+        }
     }
 }

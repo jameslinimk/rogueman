@@ -1,9 +1,12 @@
 use macroquad::color::{BLACK, WHITE};
 use macroquad::window::clear_background;
 
+use crate::camera::CAMERA;
 use crate::scenes::objects::player::Player;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::Object;
+
+use super::objects::test::TestObj;
 
 static mut GAME_SCENE: Option<GameScene> = None;
 
@@ -26,13 +29,15 @@ impl GameScene {
     pub fn new() -> GameScene {
         GameScene {
             player: Player::new(),
-            objects: vec![],
+            objects: vec![Box::new(TestObj::new())],
             walls: vec![Rect::new(100.0, 100.0, 50.0, 50.0)],
         }
     }
 }
 impl Object for GameScene {
     fn update(&mut self) {
+        CAMERA().update();
+
         for obj in &mut self.objects {
             obj.update()
         }
