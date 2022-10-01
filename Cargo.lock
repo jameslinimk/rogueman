@@ -203,16 +203,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "macroquad-tiled"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fee87816ce03b309adf842e1cb984fdd2f1917ccf0542028cdc7af67000c97f"
-dependencies = [
- "macroquad",
- "nanoserde",
-]
-
-[[package]]
 name = "macroquad_macro"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -253,21 +243,6 @@ checksum = "96590ba8f175222643a85693f33d26e9c8a015f599c216509b1a6894af675d34"
 dependencies = [
  "adler",
 ]
-
-[[package]]
-name = "nanoserde"
-version = "0.1.30"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ada81c67664d8256507a2d427273ed307631f0e4bb2bbb56beffd8fe42a1c4d"
-dependencies = [
- "nanoserde-derive",
-]
-
-[[package]]
-name = "nanoserde-derive"
-version = "0.1.18"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "290eec6719d68aef1f5ca0e695f8ad6421adcf8791fc17641c4ccc6c5388fb39"
 
 [[package]]
 name = "ndk-sys"
@@ -374,7 +349,6 @@ name = "rust-game"
 version = "0.1.0"
 dependencies = [
  "macroquad",
- "macroquad-tiled",
 ]
 
 [[package]]

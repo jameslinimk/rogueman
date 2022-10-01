@@ -71,7 +71,7 @@ impl Player {
             }
         }
 
-        CAMERA().set_target(self.rect.get_center());
+        CAMERA().target = self.rect.get_center();
     }
 
     pub fn draw(&mut self) {
