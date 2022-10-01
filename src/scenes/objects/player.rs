@@ -1,13 +1,15 @@
 use crate::camera::CAMERA;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::rel_mouse_pos;
+use crate::util::{angle, rel_mouse_pos};
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
+use macroquad::prelude::{is_key_pressed, is_mouse_button_pressed, MouseButton};
 use macroquad::shapes::draw_line;
-use macroquad::text::draw_text;
 use macroquad::time::get_frame_time;
 use macroquad::window::{screen_height, screen_width};
+
+use super::bullet::Bullet;
 
 #[derive(Debug)]
 pub(crate) struct Player {
@@ -23,29 +25,18 @@ impl Player {
     }
 }
 impl Player {
+    #[rustfmt::skip]
     pub fn update(&mut self) {
         let mut hspd = 0.0;
         let mut vspd = 0.0;
 
-        if is_key_down(KeyCode::W) {
-            vspd -= 1.0
-        }
-        if is_key_down(KeyCode::S) {
-            vspd += 1.0
-        }
-        if is_key_down(KeyCode::A) {
-            hspd -= 1.0
-        }
-        if is_key_down(KeyCode::D) {
-            hspd += 1.0
-        }
+        if is_key_down(KeyCode::W) { vspd -= 1.0 }
+        if is_key_down(KeyCode::S) { vspd += 1.0 }
+        if is_key_down(KeyCode::A) { hspd -= 1.0 }
+        if is_key_down(KeyCode::D) { hspd += 1.0 }
 
         // Band-aid patch for diagonal movement
-        let dia = if hspd != 0.0 && vspd != 0.0 {
-            0.707
-        } else {
-            1.0
-        };
+        let dia = if hspd != 0.0 && vspd != 0.0 { 0.707 } else { 1.0 };
 
         let ft = get_frame_time();
         hspd *= self.speed * ft * dia;
@@ -72,6 +63,11 @@ impl Player {
             }
         }
 
+        if is_mouse_button_pressed(MouseButton::Left) {
+            let angle = angle(self.rect.get_center(), rel_mouse_pos());
+            GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center())))
+        }
+
         CAMERA().target = self.rect.get_center();
     }
 
@@ -83,33 +79,15 @@ impl Player {
         // Extend line by length
         let length = screen_height() + screen_width();
         let alpha =
-            (mouse_pos.1 - self.rect.get_center().y).atan2(mouse_pos.0 - self.rect.get_center().x);
-
-        // ! If you move right enough the mouse line stops working (SOMETHING WRONG WITH RELATIVE COORDS)
-        println!(
-            "{:?} | {:?}",
-            (self.rect.get_center().x, self.rect.get_center().y),
-            (
-                mouse_pos.0 + length * alpha.cos(),
-                mouse_pos.1 + length * alpha.sin()
-            )
-        );
+            (mouse_pos.y - self.rect.get_center().y).atan2(mouse_pos.x - self.rect.get_center().x);
 
         draw_line(
             self.rect.get_center().x,
             self.rect.get_center().y,
-            mouse_pos.0 + length * alpha.cos(),
-            mouse_pos.1 + length * alpha.sin(),
+            mouse_pos.x + length * alpha.cos(),
+            mouse_pos.y + length * alpha.sin(),
             2.0,
             BLUE,
-        );
-
-        draw_text(
-            &format!("xy: {:?}", self.rect.get_center()),
-            0.0 - (screen_width() / 2.0 - CAMERA().camera.target.x).abs(),
-            27.0 - (screen_height() / 2.0 - CAMERA().camera.target.y).abs(),
-            50.0,
-            WHITE,
         );
     }
 }
