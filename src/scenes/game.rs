@@ -4,21 +4,11 @@ use macroquad::window::clear_background;
 use crate::camera::CAMERA;
 use crate::scenes::objects::player::Player;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::Object;
+use crate::{pub_global_variable, Object};
 
 use super::objects::test::TestObj;
 
-static mut GAME_SCENE: Option<GameScene> = None;
-
-#[allow(non_snake_case)]
-pub(crate) fn GAME() -> &'static mut GameScene {
-    unsafe {
-        if GAME_SCENE.is_none() {
-            GAME_SCENE = Option::from(GameScene::new())
-        }
-        return GAME_SCENE.as_mut().unwrap();
-    }
-}
+pub_global_variable!(GAME, _GAME, GameScene);
 
 pub(crate) struct GameScene {
     pub player: Player,

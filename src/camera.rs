@@ -3,19 +3,10 @@ use macroquad::math::{vec2, Vec2};
 use macroquad::prelude::{screen_height, screen_width};
 use macroquad::time::get_frame_time;
 
+use crate::pub_global_variable;
 use crate::util::{angle, distance, ease_in_out, project};
 
-static mut _CAMERA: Option<Camera> = None;
-
-#[allow(non_snake_case)]
-pub(crate) fn CAMERA() -> &'static mut Camera {
-    unsafe {
-        if _CAMERA.is_none() {
-            _CAMERA = Option::from(Camera::new())
-        }
-        return _CAMERA.as_mut().unwrap();
-    }
-}
+pub_global_variable!(CAMERA, _CAMERA, Camera);
 
 pub(crate) struct Camera {
     pub camera: Camera2D,

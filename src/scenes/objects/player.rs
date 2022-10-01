@@ -1,10 +1,11 @@
 use crate::camera::CAMERA;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::adj_mouse_pos;
+use crate::util::rel_mouse_pos;
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
 use macroquad::shapes::draw_line;
+use macroquad::text::draw_text;
 use macroquad::time::get_frame_time;
 use macroquad::window::{screen_height, screen_width};
 
@@ -17,7 +18,7 @@ impl Player {
     pub fn new() -> Player {
         Player {
             rect: Rect::new_center(0.0, 0.0, 30.0, 30.0),
-            speed: 250.0,
+            speed: 500.0,
         }
     }
 }
@@ -77,14 +78,14 @@ impl Player {
     pub fn draw(&mut self) {
         self.rect.draw(WHITE);
 
-        let mouse_pos = adj_mouse_pos();
+        let mouse_pos = rel_mouse_pos();
 
         // Extend line by length
         let length = screen_height() + screen_width();
         let alpha =
             (mouse_pos.1 - self.rect.get_center().y).atan2(mouse_pos.0 - self.rect.get_center().x);
 
-        // ! If you move right enough the mouse line stops working
+        // ! If you move right enough the mouse line stops working (SOMETHING WRONG WITH RELATIVE COORDS)
         println!(
             "{:?} | {:?}",
             (self.rect.get_center().x, self.rect.get_center().y),
@@ -101,6 +102,14 @@ impl Player {
             mouse_pos.1 + length * alpha.sin(),
             2.0,
             BLUE,
-        )
+        );
+
+        draw_text(
+            &format!("xy: {:?}", self.rect.get_center()),
+            0.0 - (screen_width() / 2.0 - CAMERA().camera.target.x).abs(),
+            27.0 - (screen_height() / 2.0 - CAMERA().camera.target.y).abs(),
+            50.0,
+            WHITE,
+        );
     }
 }
