@@ -40,6 +40,7 @@ impl Camera {
     pub fn update(&mut self) {
         let dis = distance(self.camera.target, self.target);
         let max_increase = screen_width().max(screen_height()) / 2.0;
+
         let ratio = ease_in_out(dis / max_increase);
 
         let pan_speed = (2000.0 * ratio) * get_frame_time();

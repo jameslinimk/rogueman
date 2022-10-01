@@ -43,15 +43,4 @@ pub(crate) fn distance(p1: Vec2, p2: Vec2) -> f32 {
 
 pub(crate) fn ease_in_out(x: f32) -> f32 {
     return (-((PI * x).cos() - 1.0) / 2.0).clamp(0.0, 1.0);
-
-    // Code for quadratic ease:
-    // if x <= 0.0 || x >= 1.0 {
-    //     return x.clamp(0.0, 1.0);
-    // }
-
-    // if x < 0.5 {
-    //     return 2_f32 * x.powf(2.0);
-    // }
-
-    // return 1.0 - (-2.0 * x + 2.0).powf(2.0) / 2.0;
 }

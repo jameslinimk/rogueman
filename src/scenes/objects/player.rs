@@ -84,6 +84,16 @@ impl Player {
         let alpha =
             (mouse_pos.1 - self.rect.get_center().y).atan2(mouse_pos.0 - self.rect.get_center().x);
 
+        // ! If you move right enough the mouse line stops working
+        println!(
+            "{:?} | {:?}",
+            (self.rect.get_center().x, self.rect.get_center().y),
+            (
+                mouse_pos.0 + length * alpha.cos(),
+                mouse_pos.1 + length * alpha.sin()
+            )
+        );
+
         draw_line(
             self.rect.get_center().x,
             self.rect.get_center().y,
