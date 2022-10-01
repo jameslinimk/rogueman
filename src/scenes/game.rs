@@ -6,13 +6,14 @@ use crate::scenes::objects::player::Player;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::{pub_global_variable, Object};
 
+use super::object::IDObject;
 use super::objects::test::TestObj;
 
 pub_global_variable!(GAME, _GAME, GameScene);
 
 pub(crate) struct GameScene {
     pub player: Player,
-    pub objects: Vec<Box<dyn Object>>,
+    pub objects: Vec<Box<dyn IDObject>>,
     pub walls: Vec<Rect>,
 }
 impl GameScene {
@@ -22,6 +23,14 @@ impl GameScene {
             objects: vec![Box::new(TestObj::new())],
             walls: vec![Rect::new(100.0, 100.0, 50.0, 50.0)],
         }
+    }
+
+    pub fn remove_obj(&mut self, id: u32) {
+        let index = match self.objects.iter().position(|x| x.get_id() == id) {
+            Some(index) => index,
+            None => return,
+        };
+        self.objects.remove(index);
     }
 }
 impl Object for GameScene {

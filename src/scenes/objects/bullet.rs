@@ -3,7 +3,13 @@ use macroquad::{
     time::{get_frame_time, get_time},
 };
 
-use crate::{scenes::object::Object, util::project};
+use crate::{
+    scenes::{
+        game::GAME,
+        object::{obj_id, IDObject, Object},
+    },
+    util::project,
+};
 
 use super::shapes::rect::Rect;
 
@@ -13,6 +19,7 @@ pub(crate) struct Bullet {
     speed: f32,
     max_lifespan: f32,
     created: f64,
+    id: u32,
 }
 impl Bullet {
     pub fn new(angle: f32, pos: Vec2) -> Bullet {
@@ -22,13 +29,14 @@ impl Bullet {
             speed: 150.0,
             max_lifespan: 2.0,
             created: get_time(),
+            id: obj_id(),
         }
     }
 }
-impl Object for Bullet {
+impl IDObject for Bullet {
     fn update(&mut self) {
         if get_time() > self.created + self.max_lifespan as f64 {
-            println!("delete");
+            GAME().remove_obj(self.id);
         }
 
         self.rect.set_center_vec(project(
@@ -40,5 +48,9 @@ impl Object for Bullet {
 
     fn draw(&mut self) {
         self.rect.draw(YELLOW);
+    }
+
+    fn get_id(&self) -> u32 {
+        return self.id;
     }
 }
