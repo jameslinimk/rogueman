@@ -1,48 +1,67 @@
 use macroquad::{
     prelude::{Vec2, YELLOW},
+    rand::gen_range,
     time::{get_frame_time, get_time},
 };
 
 use crate::{
     scenes::{
         game::GAME,
-        object::{obj_id, IDObject, Object},
+        object::{obj_id, IDObject},
     },
-    util::project,
+    util::{deg_to_rad, project},
 };
 
 use super::shapes::rect::Rect;
 
+#[derive(Debug)]
+pub(crate) struct BulletConfig {
+    pub speed: f32,
+    pub max_lifespan: f32,
+    /// Bullet spread in degrees
+    pub spread: f32,
+    pub bullet_size: f32,
+    /// Wether the bullet can travel through enemies (0 if not)
+    pub pierce: u8,
+    pub damage: f32,
+    /// If false, will damage player
+    pub friendly: bool,
+}
+
 pub(crate) struct Bullet {
     angle: f32,
     rect: Rect,
-    speed: f32,
-    max_lifespan: f32,
     created: f64,
+    config: BulletConfig,
     id: u32,
 }
 impl Bullet {
-    pub fn new(angle: f32, pos: Vec2) -> Bullet {
-        Bullet {
-            angle,
-            rect: Rect::new_center_vec(pos, 20.0, 20.0),
-            speed: 150.0,
-            max_lifespan: 2.0,
+    pub fn new(angle: f32, pos: Vec2, config: BulletConfig) -> Bullet {
+        let spread = if config.spread != 0.0 {
+            deg_to_rad(gen_range(-config.spread, config.spread))
+        } else {
+            0.0
+        };
+
+        return Bullet {
+            angle: angle + spread,
+            rect: Rect::new_center_vec(pos, config.bullet_size, config.bullet_size),
+            config,
             created: get_time(),
             id: obj_id(),
-        }
+        };
     }
 }
 impl IDObject for Bullet {
     fn update(&mut self) {
-        if get_time() > self.created + self.max_lifespan as f64 {
+        if get_time() > self.created + self.config.max_lifespan as f64 {
             GAME().remove_obj(self.id);
         }
 
         self.rect.set_center_vec(project(
             self.rect.get_center(),
             self.angle,
-            self.speed * get_frame_time(),
+            self.config.speed * get_frame_time(),
         ));
     }
 

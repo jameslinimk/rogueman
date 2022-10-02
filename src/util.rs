@@ -31,6 +31,16 @@ pub(crate) fn project(origin: Vec2, angle: f32, distance: f32) -> Vec2 {
     );
 }
 
+/// Converts degrees to radians
+pub(crate) fn deg_to_rad(degrees: f32) -> f32 {
+    return degrees * PI / 180.0;
+}
+
+/// Converts radians to degrees
+pub(crate) fn rad_to_deg(radians: f32) -> f32 {
+    return radians * 180.0 / PI;
+}
+
 /// It returns the x position relative to the screen
 pub(crate) fn rx(x: f32) -> f32 {
     return x - (screen_width() / 2.0 - CAMERA().camera.target.x);
@@ -65,24 +75,6 @@ macro_rules! pub_global_variable {
 
         #[allow(non_snake_case)]
         pub(crate) fn $name() -> &'static mut $b {
-            unsafe {
-                if $raw_name.is_none() {
-                    $raw_name = Option::from(<$b>::new())
-                }
-                return $raw_name.as_mut().unwrap();
-            }
-        }
-    };
-}
-
-#[macro_export]
-/// Crate a global (a static mut) and a getter function so it can be used safely
-macro_rules! global_variable {
-    ($name: ident, $raw_name: ident, $b: ty) => {
-        static mut $raw_name: Option<$b> = None;
-
-        #[allow(non_snake_case)]
-        fn $name() -> &'static mut $b {
             unsafe {
                 if $raw_name.is_none() {
                     $raw_name = Option::from(<$b>::new())

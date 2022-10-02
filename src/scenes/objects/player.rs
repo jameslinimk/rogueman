@@ -4,23 +4,26 @@ use crate::util::{angle, rel_mouse_pos};
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
-use macroquad::prelude::{is_key_pressed, is_mouse_button_pressed, MouseButton};
+use macroquad::prelude::{is_mouse_button_pressed, MouseButton};
 use macroquad::shapes::draw_line;
 use macroquad::time::get_frame_time;
 use macroquad::window::{screen_height, screen_width};
 
-use super::bullet::Bullet;
+use super::bullet::{Bullet, BulletConfig};
+use super::guns::{pistol, Gun};
 
 #[derive(Debug)]
 pub(crate) struct Player {
     pub rect: Rect,
     speed: f32,
+    selected_gun: Gun,
 }
 impl Player {
     pub fn new() -> Player {
         Player {
             rect: Rect::new_center(0.0, 0.0, 30.0, 30.0),
             speed: 500.0,
+            selected_gun: pistol(),
         }
     }
 }
@@ -65,7 +68,15 @@ impl Player {
 
         if is_mouse_button_pressed(MouseButton::Left) {
             let angle = angle(self.rect.get_center(), rel_mouse_pos());
-            GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center())))
+            GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center(), BulletConfig {
+                speed: 1000.0,
+                max_lifespan: 5.0,
+                spread: 20.0,
+                bullet_size: 20.0,
+                pierce: 0,
+                damage: 10.0,
+                friendly: true,
+            })));
         }
 
         CAMERA().target = self.rect.get_center();

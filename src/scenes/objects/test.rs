@@ -1,9 +1,9 @@
-use macroquad::{prelude::YELLOW, time::get_frame_time};
+use macroquad::time::get_frame_time;
 
 use crate::{
     scenes::{
         game::GAME,
-        object::{obj_id, IDObject, Object},
+        object::{obj_id, IDObject},
     },
     util::{angle, project},
 };
