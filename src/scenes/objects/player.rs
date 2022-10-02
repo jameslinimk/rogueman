@@ -68,15 +68,7 @@ impl Player {
 
         if is_mouse_button_pressed(MouseButton::Left) {
             let angle = angle(self.rect.get_center(), rel_mouse_pos());
-            GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center(), BulletConfig {
-                speed: 1000.0,
-                max_lifespan: 5.0,
-                spread: 20.0,
-                bullet_size: 20.0,
-                pierce: 0,
-                damage: 10.0,
-                friendly: true,
-            })));
+            GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center(), self.selected_gun.bullet_config)));
         }
 
         CAMERA().target = self.rect.get_center();

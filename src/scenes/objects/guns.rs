@@ -1,7 +1,7 @@
 use super::bullet::BulletConfig;
 
 #[derive(Debug)]
-enum Rarities {
+pub(crate) enum Rarities {
     COMMON,
     UNCOMMON,
     RARE,
@@ -12,12 +12,12 @@ enum Rarities {
 
 #[derive(Debug)]
 pub(crate) struct Gun {
-    name: String,
-    holdable: bool,
-    fire_delay: f32,
-    rarity: Rarities,
-    level: u8,
-    bullet_config: BulletConfig,
+    pub name: String,
+    pub holdable: bool,
+    pub fire_delay: f32,
+    pub rarity: Rarities,
+    pub level: u8,
+    pub bullet_config: BulletConfig,
 }
 
 pub(crate) fn pistol() -> Gun {

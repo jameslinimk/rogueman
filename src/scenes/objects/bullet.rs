@@ -14,7 +14,7 @@ use crate::{
 
 use super::shapes::rect::Rect;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub(crate) struct BulletConfig {
     pub speed: f32,
     pub max_lifespan: f32,
