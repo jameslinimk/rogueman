@@ -1,7 +1,8 @@
 use std::f32::consts::PI;
 
 use macroquad::{
-    prelude::{mouse_position, vec2, Vec2},
+    prelude::{mouse_position, vec2, Color, Vec2},
+    text::{draw_text, draw_text_ex, measure_text, TextParams},
     window::{screen_height, screen_width},
 };
 
@@ -75,6 +76,33 @@ pub(crate) fn distance(p1: Vec2, p2: Vec2) -> f32 {
 /// Converts a value from `0.0` - `1.0` to an ease-in-out curve (sign wave)
 pub(crate) fn ease_in_out(x: f32) -> f32 {
     return (-((PI * x).cos() - 1.0) / 2.0).clamp(0.0, 1.0);
+}
+
+pub(crate) fn multiline_text(text: &str, x: f32, y: f32, font_size: u16, color: Color) {
+    let height = measure_text(text, None, font_size, 1.0).height;
+    for (i, line) in text.split("\n").enumerate() {
+        draw_text(line, x, y + height * i as f32, font_size as f32, color);
+    }
+}
+
+pub(crate) fn multiline_text_ex(
+    text: &str,
+    x: f32,
+    y: f32,
+    font_size: u16,
+    color: Color,
+    params: TextParams,
+) {
+    let height = measure_text(
+        text,
+        Option::from(params.font),
+        font_size,
+        params.font_scale,
+    )
+    .height;
+    for (i, line) in text.split("\n").enumerate() {
+        draw_text_ex(line, x, y + height * i as f32, params);
+    }
 }
 
 #[macro_export]

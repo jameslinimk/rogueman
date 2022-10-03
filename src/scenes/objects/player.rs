@@ -1,6 +1,6 @@
 use crate::camera::CAMERA;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::{angle, rel_mouse_pos, rx, ry};
+use crate::util::{angle, rel_mouse_pos, rx, ry, multiline_text};
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
@@ -92,7 +92,7 @@ impl Player {
     }
 
     fn draw_ui(&self) {
-        draw_text(&format!("X,Y: {}, {}", self.rect.get_center().x.round(), self.rect.get_center().y.round()), rx(0.0), ry(27.0), 50.0, WHITE);
+        multiline_text(&format!("X,Y: {}, {}\nTest\nMore tests\nEven more tests", self.rect.get_center().x.round(), self.rect.get_center().y.round()), rx(0.0), ry(27.0), 50, WHITE);
     }
 
     pub fn draw(&mut self) {
