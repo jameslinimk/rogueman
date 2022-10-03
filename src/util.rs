@@ -84,3 +84,26 @@ macro_rules! pub_global_variable {
         }
     };
 }
+
+#[macro_export]
+macro_rules! game_remove {
+    ($vector: expr, $id: expr) => {
+        match $vector.iter().position(|x| x.get_id() == $id) {
+            Some(index) => {
+                $vector.remove(index);
+            }
+            None => {}
+        };
+    };
+}
+
+#[macro_export]
+macro_rules! repeat_for_vec {
+    ( $function: ident, $( $vector: expr ), * ) => {
+        $(
+            for x in &mut $vector {
+                x.$function()
+            }
+        )*
+    };
+}

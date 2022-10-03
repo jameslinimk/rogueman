@@ -23,7 +23,7 @@ pub(crate) struct Gun {
 pub(crate) fn pistol() -> Gun {
     return Gun {
         name: "Pistol".to_string(),
-        holdable: false,
+        holdable: true,
         fire_delay: 0.2,
         rarity: Rarities::COMMON,
         level: 1,

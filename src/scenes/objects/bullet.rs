@@ -5,8 +5,9 @@ use macroquad::{
 };
 
 use crate::{
+    game_remove,
     scenes::{
-        game::GAME,
+        game::{self, GAME},
         object::{obj_id, IDObject},
     },
     util::{deg_to_rad, project},
@@ -55,7 +56,7 @@ impl Bullet {
 impl IDObject for Bullet {
     fn update(&mut self) {
         if get_time() > self.created + self.config.max_lifespan as f64 {
-            GAME().remove_obj(self.id);
+            game_remove!(GAME().objects, self.id);
         }
 
         self.rect.set_center_vec(project(
@@ -63,6 +64,18 @@ impl IDObject for Bullet {
             self.angle,
             self.config.speed * get_frame_time(),
         ));
+
+        if self.config.friendly {
+            for enemy in &mut GAME().enemies {
+                if self.rect.touches(&enemy.rect) {
+                    enemy.hit(self.config.damage);
+                }
+            }
+        } else {
+            if self.rect.touches(&GAME().player.rect) {
+                GAME().player.hit(self.config.damage);
+            }
+        }
     }
 
     fn draw(&mut self) {

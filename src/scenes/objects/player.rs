@@ -4,9 +4,9 @@ use crate::util::{angle, rel_mouse_pos};
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
-use macroquad::prelude::{is_mouse_button_pressed, MouseButton};
+use macroquad::prelude::{is_mouse_button_pressed, MouseButton, is_mouse_button_down};
 use macroquad::shapes::draw_line;
-use macroquad::time::get_frame_time;
+use macroquad::time::{get_frame_time, get_time};
 use macroquad::window::{screen_height, screen_width};
 
 use super::bullet::{Bullet, BulletConfig};
@@ -16,14 +16,20 @@ use super::guns::{pistol, Gun};
 pub(crate) struct Player {
     pub rect: Rect,
     speed: f32,
-    selected_gun: Gun,
+    selected_gun: Option<Gun>,
+    last_shot: f64,
+    max_health: f32,
+    health: f32
 }
 impl Player {
     pub fn new() -> Player {
         Player {
             rect: Rect::new_center(0.0, 0.0, 30.0, 30.0),
             speed: 500.0,
-            selected_gun: pistol(),
+            selected_gun: Option::from(pistol()),
+            last_shot: 0.0,
+            max_health: 100.0,
+            health: 100.0
         }
     }
 }
@@ -66,12 +72,22 @@ impl Player {
             }
         }
 
-        if is_mouse_button_pressed(MouseButton::Left) {
-            let angle = angle(self.rect.get_center(), rel_mouse_pos());
-            GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center(), self.selected_gun.bullet_config)));
+        if self.selected_gun.is_some() && get_time() > self.last_shot + self.selected_gun.as_ref().unwrap().fire_delay as f64 {
+            if self.selected_gun.as_ref().unwrap().holdable && is_mouse_button_down(MouseButton::Left) {
+                self.shoot();
+            } else if is_mouse_button_pressed(MouseButton::Left) {
+                self.shoot();
+            }
         }
-
+        
         CAMERA().target = self.rect.get_center();
+    }
+
+    fn shoot(&mut self) {
+        if self.selected_gun.is_none() { return }
+        let angle = angle(self.rect.get_center(), rel_mouse_pos());
+        GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center(), self.selected_gun.as_ref().unwrap().bullet_config)));
+        self.last_shot = get_time();
     }
 
     pub fn draw(&mut self) {
@@ -92,5 +108,12 @@ impl Player {
             2.0,
             BLUE,
         );
+    }
+
+    pub fn hit(&mut self, damage: f32) {
+        self.health -= damage;
+        if self.health < 0.0 {
+            println!("Player died");
+        }
     }
 }
