@@ -43,12 +43,22 @@ pub(crate) fn rad_to_deg(radians: f32) -> f32 {
 
 /// It returns the x position relative to the screen
 pub(crate) fn rx(x: f32) -> f32 {
-    return x - (screen_width() / 2.0 - CAMERA().camera.target.x);
+    let shake_offset = if CAMERA().shake.is_none() {
+        0.0
+    } else {
+        CAMERA().shake_offset.x
+    };
+    return x - (screen_width() / 2.0 - CAMERA().camera.target.x + shake_offset);
 }
 
 /// It returns the x position relative to the screen
 pub(crate) fn ry(y: f32) -> f32 {
-    return y - (screen_height() / 2.0 - CAMERA().camera.target.y);
+    let shake_offset = if CAMERA().shake.is_none() {
+        0.0
+    } else {
+        CAMERA().shake_offset.y
+    };
+    return y - (screen_height() / 2.0 - CAMERA().camera.target.y + shake_offset);
 }
 
 /// It returns the mouse position relative to the screen

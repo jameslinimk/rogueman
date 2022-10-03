@@ -1,7 +1,8 @@
 use macroquad::color::{BLACK, WHITE};
+use macroquad::prelude::{is_key_down, is_key_pressed, KeyCode};
 use macroquad::window::clear_background;
 
-use crate::camera::CAMERA;
+use crate::camera::{ShakeConfig, CAMERA};
 use crate::scenes::objects::player::Player;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::{pub_global_variable, repeat_for_vec, Object};

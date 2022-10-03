@@ -24,7 +24,7 @@ pub(crate) fn pistol() -> Gun {
     return Gun {
         name: "Pistol".to_string(),
         holdable: true,
-        fire_delay: 0.2,
+        fire_delay: 2.0,
         rarity: Rarities::COMMON,
         level: 1,
         bullet_config: BulletConfig {

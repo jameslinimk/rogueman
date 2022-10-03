@@ -1,11 +1,12 @@
 use crate::camera::CAMERA;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::{angle, rel_mouse_pos};
+use crate::util::{angle, rel_mouse_pos, rx, ry};
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
 use macroquad::prelude::{is_mouse_button_pressed, MouseButton, is_mouse_button_down};
 use macroquad::shapes::draw_line;
+use macroquad::text::draw_text;
 use macroquad::time::{get_frame_time, get_time};
 use macroquad::window::{screen_height, screen_width};
 
@@ -72,7 +73,7 @@ impl Player {
             }
         }
 
-        if self.selected_gun.is_some() && get_time() > self.last_shot + self.selected_gun.as_ref().unwrap().fire_delay as f64 {
+        if self.selected_gun.is_some() && (self.last_shot == 0.0 || get_time() > self.last_shot + self.selected_gun.as_ref().unwrap().fire_delay as f64) {
             if self.selected_gun.as_ref().unwrap().holdable && is_mouse_button_down(MouseButton::Left) {
                 self.shoot();
             } else if is_mouse_button_pressed(MouseButton::Left) {
@@ -88,6 +89,10 @@ impl Player {
         let angle = angle(self.rect.get_center(), rel_mouse_pos());
         GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center(), self.selected_gun.as_ref().unwrap().bullet_config)));
         self.last_shot = get_time();
+    }
+
+    fn draw_ui(&self) {
+        draw_text(&format!("X,Y: {}, {}", self.rect.get_center().x.round(), self.rect.get_center().y.round()), rx(0.0), ry(27.0), 50.0, WHITE);
     }
 
     pub fn draw(&mut self) {
@@ -108,6 +113,8 @@ impl Player {
             2.0,
             BLUE,
         );
+
+        self.draw_ui();
     }
 
     pub fn hit(&mut self, damage: f32) {
