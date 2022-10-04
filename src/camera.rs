@@ -9,6 +9,7 @@ use crate::util::{angle, distance, ease_in_out, project};
 
 pub_global_variable!(CAMERA, _CAMERA, Camera);
 
+#[derive(Debug, Clone, Copy)]
 pub(crate) struct ShakeConfig {
     pub duration: f32,
     pub intensity: f32,

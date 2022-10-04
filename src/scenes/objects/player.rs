@@ -1,58 +1,75 @@
-use crate::camera::CAMERA;
+use crate::camera::{ShakeConfig, CAMERA};
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::{angle, rel_mouse_pos, rx, ry, multiline_text};
+use crate::util::{
+    angle, multiline_text, rel_mouse_pos, rx, rx_smooth, ry, ry_smooth, NUMBER_KEYS,
+};
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
-use macroquad::prelude::{is_mouse_button_pressed, MouseButton, is_mouse_button_down};
+use macroquad::prelude::{
+    is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, MouseButton,
+};
 use macroquad::shapes::draw_line;
 use macroquad::text::draw_text;
 use macroquad::time::{get_frame_time, get_time};
 use macroquad::window::{screen_height, screen_width};
 
 use super::bullet::{Bullet, BulletConfig};
-use super::guns::{pistol, Gun};
+use super::guns::{Gun, GUNS};
 
 #[derive(Debug)]
 pub(crate) struct Player {
     pub rect: Rect,
     speed: f32,
-    selected_gun: Option<Gun>,
     last_shot: f64,
     max_health: f32,
-    health: f32
+    health: f32,
+    guns: Vec<Gun>,
+    selected_gun: usize,
 }
 impl Player {
     pub fn new() -> Player {
         Player {
             rect: Rect::new_center(0.0, 0.0, 30.0, 30.0),
             speed: 500.0,
-            selected_gun: Option::from(pistol()),
             last_shot: 0.0,
             max_health: 100.0,
-            health: 100.0
+            health: 100.0,
+            guns: GUNS.to_vec(),
+            selected_gun: 0,
         }
     }
-}
-impl Player {
-    #[rustfmt::skip]
+
     pub fn update(&mut self) {
+        /* -------------------------------- Movement -------------------------------- */
         let mut hspd = 0.0;
         let mut vspd = 0.0;
 
-        if is_key_down(KeyCode::W) { vspd -= 1.0 }
-        if is_key_down(KeyCode::S) { vspd += 1.0 }
-        if is_key_down(KeyCode::A) { hspd -= 1.0 }
-        if is_key_down(KeyCode::D) { hspd += 1.0 }
+        if is_key_down(KeyCode::W) {
+            vspd -= 1.0
+        }
+        if is_key_down(KeyCode::S) {
+            vspd += 1.0
+        }
+        if is_key_down(KeyCode::A) {
+            hspd -= 1.0
+        }
+        if is_key_down(KeyCode::D) {
+            hspd += 1.0
+        }
 
         // Band-aid patch for diagonal movement
-        let dia = if hspd != 0.0 && vspd != 0.0 { 0.707 } else { 1.0 };
+        let dia = if hspd != 0.0 && vspd != 0.0 {
+            0.707
+        } else {
+            1.0
+        };
 
         let ft = get_frame_time();
         hspd *= self.speed * ft * dia;
         vspd *= self.speed * ft * dia;
 
-        // Collision detection
+        /* --------------------------- Collision detection -------------------------- */
         for wall in &GAME().walls {
             self.rect.pos.x += hspd;
             if self.rect.touches(wall) {
@@ -73,26 +90,73 @@ impl Player {
             }
         }
 
-        if self.selected_gun.is_some() && (self.last_shot == 0.0 || get_time() > self.last_shot + self.selected_gun.as_ref().unwrap().fire_delay as f64) {
-            if self.selected_gun.as_ref().unwrap().holdable && is_mouse_button_down(MouseButton::Left) {
-                self.shoot();
-            } else if is_mouse_button_pressed(MouseButton::Left) {
-                self.shoot();
+        /* -------------------------------- Shooting -------------------------------- */
+        match self.get_gun() {
+            Some(gun) => {
+                if gun.holdable && is_mouse_button_down(MouseButton::Left) {
+                    self.shoot();
+                } else if is_mouse_button_pressed(MouseButton::Left) {
+                    self.shoot();
+                }
+            }
+            None => {}
+        };
+
+        /* ---------------------------- Switching weapons --------------------------- */
+        for (i, key) in NUMBER_KEYS.iter().enumerate() {
+            if is_key_pressed(*key) && i < self.guns.len() {
+                self.selected_gun = i;
             }
         }
-        
+
+        /* ---------------------------------- Misc ---------------------------------- */
         CAMERA().target = self.rect.get_center();
     }
 
+    fn get_gun(&self) -> Option<Gun> {
+        if self.selected_gun >= self.guns.len() {
+            return None;
+        }
+        return Option::from(self.guns[self.selected_gun]);
+    }
+
     fn shoot(&mut self) {
-        if self.selected_gun.is_none() { return }
-        let angle = angle(self.rect.get_center(), rel_mouse_pos());
-        GAME().objects.push(Box::new(Bullet::new(angle, self.rect.get_center(), self.selected_gun.as_ref().unwrap().bullet_config)));
-        self.last_shot = get_time();
+        match self.get_gun() {
+            Some(gun) => {
+                if self.last_shot == 0.0 || get_time() > self.last_shot + gun.fire_delay as f64 {
+                    CAMERA().set_shake(gun.shake);
+
+                    let angle = angle(self.rect.get_center(), rel_mouse_pos());
+                    GAME().objects.push(Box::new(Bullet::new(
+                        angle,
+                        self.rect.get_center(),
+                        gun.bullet_config,
+                    )));
+                    self.last_shot = get_time();
+                }
+            }
+            None => {}
+        }
     }
 
     fn draw_ui(&self) {
-        multiline_text(&format!("X,Y: {}, {}\nTest\nMore tests\nEven more tests", self.rect.get_center().x.round(), self.rect.get_center().y.round()), rx(0.0), ry(27.0), 50, WHITE);
+        let gun = self.get_gun();
+        multiline_text(
+            &format!(
+                "X,Y: {}, {}\nGun: {}",
+                self.rect.get_center().x.round(),
+                self.rect.get_center().y.round(),
+                if gun.is_none() {
+                    "None"
+                } else {
+                    &gun.unwrap().name
+                }
+            ),
+            rx_smooth(0.0),
+            ry_smooth(27.0),
+            50,
+            WHITE,
+        );
     }
 
     pub fn draw(&mut self) {

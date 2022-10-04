@@ -1,12 +1,15 @@
 use std::f32::consts::PI;
 
 use macroquad::{
-    prelude::{mouse_position, vec2, Color, Vec2},
+    prelude::{mouse_position, vec2, Color, KeyCode, Vec2},
     text::{draw_text, draw_text_ex, measure_text, TextParams},
     window::{screen_height, screen_width},
 };
 
 use crate::camera::CAMERA;
+
+pub(crate) const NUMBER_KEYS: [KeyCode; 4] =
+    [KeyCode::Key1, KeyCode::Key2, KeyCode::Key3, KeyCode::Key4];
 
 /// It takes two points, and returns the angle between them
 pub(crate) fn angle(origin: Vec2, dest: Vec2) -> f32 {
@@ -49,11 +52,31 @@ pub(crate) fn rx(x: f32) -> f32 {
     } else {
         CAMERA().shake_offset.x
     };
+    return x - (screen_width() / 2.0 - CAMERA().camera.target.x - shake_offset);
+}
+
+/// It returns the y position relative to the screen
+pub(crate) fn ry(y: f32) -> f32 {
+    let shake_offset = if CAMERA().shake.is_none() {
+        0.0
+    } else {
+        CAMERA().shake_offset.y
+    };
+    return y - (screen_height() / 2.0 - CAMERA().camera.target.y - shake_offset);
+}
+
+/// It returns the x position relative to the screen (counteracted to adjust for shake)
+pub(crate) fn rx_smooth(x: f32) -> f32 {
+    let shake_offset = if CAMERA().shake.is_none() {
+        0.0
+    } else {
+        CAMERA().shake_offset.x
+    };
     return x - (screen_width() / 2.0 - CAMERA().camera.target.x + shake_offset);
 }
 
-/// It returns the x position relative to the screen
-pub(crate) fn ry(y: f32) -> f32 {
+/// It returns the y position relative to the screen (counteracted to adjust for shake)
+pub(crate) fn ry_smooth(y: f32) -> f32 {
     let shake_offset = if CAMERA().shake.is_none() {
         0.0
     } else {
@@ -85,14 +108,7 @@ pub(crate) fn multiline_text(text: &str, x: f32, y: f32, font_size: u16, color: 
     }
 }
 
-pub(crate) fn multiline_text_ex(
-    text: &str,
-    x: f32,
-    y: f32,
-    font_size: u16,
-    color: Color,
-    params: TextParams,
-) {
+pub(crate) fn multiline_text_ex(text: &str, x: f32, y: f32, font_size: u16, params: TextParams) {
     let height = measure_text(
         text,
         Option::from(params.font),

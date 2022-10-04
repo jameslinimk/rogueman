@@ -1,3 +1,4 @@
+pub(crate) mod assets;
 pub(crate) mod bullet;
 pub(crate) mod enemy;
 pub(crate) mod guns;
