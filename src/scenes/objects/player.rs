@@ -11,9 +11,11 @@ use macroquad::prelude::{
 };
 use macroquad::shapes::draw_line;
 use macroquad::text::draw_text;
+use macroquad::texture::draw_texture;
 use macroquad::time::{get_frame_time, get_time};
 use macroquad::window::{screen_height, screen_width};
 
+use super::assets::get_image;
 use super::bullet::{Bullet, BulletConfig};
 use super::guns::{Gun, GUNS};
 
@@ -157,6 +159,14 @@ impl Player {
             50,
             WHITE,
         );
+
+        async {
+            if gun.is_some() {
+                println!("draw");
+                let gun_image = get_image(gun.unwrap().image_file).await;
+                draw_texture(gun_image, rx_smooth(100.0), ry_smooth(100.0), WHITE);
+            }
+        }
     }
 
     pub fn draw(&mut self) {
