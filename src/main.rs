@@ -5,8 +5,6 @@ mod util;
 use crate::scenes::game::GAME;
 use crate::scenes::object::Object;
 use macroquad::prelude::*;
-use scenes::objects::assets::load_image;
-use scenes::objects::guns::GUNS;
 use scenes::rooms::init_rooms;
 
 fn config() -> Conf {

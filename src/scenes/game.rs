@@ -1,3 +1,4 @@
+use lazy_static::lazy_static;
 use macroquad::color::{BLACK, WHITE};
 use macroquad::prelude::{is_key_down, is_key_pressed, Color, KeyCode};
 use macroquad::rand::gen_range;
@@ -37,7 +38,7 @@ impl GameScene {
                 match obj {
                     Objects::AIR => {}
                     Objects::WALL => {
-                        walls.push(Rect::new(x as f32 * 64.0, y as f32 * 64.0, 64.0, 64.0));
+                        walls.push(Rect::new(x as f32 * 30.0, y as f32 * 30.0, 30.0, 30.0));
                     }
                 }
             }
@@ -69,10 +70,10 @@ impl Object for GameScene {
     fn draw(&mut self) {
         clear_background(hex_to_color("#313639"));
 
+        self.player.draw();
+        repeat_for_vec!(draw, self.objects, self.enemies);
         for wall in &mut self.walls {
             wall.draw(WHITE)
         }
-        repeat_for_vec!(draw, self.objects, self.enemies);
-        self.player.draw();
     }
 }

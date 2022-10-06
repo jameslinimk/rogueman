@@ -72,8 +72,10 @@ impl Player {
         vspd *= self.speed * ft * dia;
 
         /* --------------------------- Collision detection -------------------------- */
+        // TODO Collision
+        let og_pos = self.rect.pos;
         for wall in &GAME().walls {
-            self.rect.pos.x += hspd;
+            self.rect.pos.x = og_pos.x + hspd;
             if self.rect.touches(wall) {
                 if self.rect.pos.x > wall.pos.x {
                     self.rect.set_left(wall.get_right());
@@ -82,7 +84,7 @@ impl Player {
                 }
             }
 
-            self.rect.pos.y += vspd;
+            self.rect.pos.y = og_pos.y + vspd;
             if self.rect.touches(wall) {
                 if self.rect.pos.y > wall.pos.y {
                     self.rect.set_top(wall.get_bottom());
