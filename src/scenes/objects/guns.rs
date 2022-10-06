@@ -52,7 +52,7 @@ const PISTOL: Gun = Gun {
 
 const SMG: Gun = Gun {
     name: "SMG",
-    image_file: "./assets/guns/pistol.png",
+    image_file: "./assets/guns/smg.png",
     holdable: true,
     fire_delay: 0.1,
     rarity: Rarities::COMMON,

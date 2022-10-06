@@ -7,6 +7,7 @@ use crate::scenes::object::Object;
 use macroquad::prelude::*;
 use scenes::objects::assets::load_image;
 use scenes::objects::guns::GUNS;
+use scenes::rooms::init_rooms;
 
 fn config() -> Conf {
     Conf {
@@ -20,9 +21,8 @@ fn config() -> Conf {
 
 #[macroquad::main(config)]
 async fn main() {
-    for gun in GUNS {
-        load_image(gun.image_file).await;
-    }
+    init_rooms().await;
+    GAME().init().await;
 
     loop {
         GAME().update();

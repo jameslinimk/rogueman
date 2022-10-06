@@ -7,9 +7,9 @@ use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
 use macroquad::prelude::{
-    is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, MouseButton,
+    is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, Color, MouseButton,
 };
-use macroquad::shapes::draw_line;
+use macroquad::shapes::{draw_line, draw_rectangle};
 use macroquad::text::draw_text;
 use macroquad::texture::draw_texture;
 use macroquad::time::{get_frame_time, get_time};
@@ -108,6 +108,7 @@ impl Player {
         for (i, key) in NUMBER_KEYS.iter().enumerate() {
             if is_key_pressed(*key) && i < self.guns.len() {
                 self.selected_gun = i;
+                self.last_shot = get_time();
             }
         }
 
@@ -142,6 +143,7 @@ impl Player {
     }
 
     fn draw_ui(&self) {
+        /* ------------------------------- Debug Menu ------------------------------- */
         let gun = self.get_gun();
         multiline_text(
             &format!(
@@ -159,6 +161,32 @@ impl Player {
             50,
             WHITE,
         );
+
+        /* -------------------------------- Gun info -------------------------------- */
+        if gun.is_some() {
+            let x = rx_smooth(10.0);
+            let y = ry_smooth(screen_height() - 74.0);
+
+            /* --------------------------------- Border --------------------------------- */
+            let border_texture = get_image("./assets/guns/border.png").unwrap();
+            draw_texture(border_texture, x, y, WHITE);
+
+            /* -------------------------------- Gun image ------------------------------- */
+            let texture = get_image(gun.unwrap().image_file).unwrap();
+            draw_texture(texture, x, y, WHITE);
+
+            /* ---------------------------- Shooting cooldown --------------------------- */
+            let fire_delay = gun.unwrap().fire_delay as f64;
+            let ratio =
+                ((get_time() - self.last_shot).clamp(0.0, fire_delay) - fire_delay) / fire_delay;
+            draw_rectangle(
+                x,
+                y,
+                64.0,
+                64.0 * ratio as f32 * -1.0,
+                Color::from_rgba(0, 0, 0, 120),
+            );
+        }
     }
 
     pub fn draw(&mut self) {

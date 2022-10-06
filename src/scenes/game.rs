@@ -1,10 +1,11 @@
 use macroquad::color::{BLACK, WHITE};
-use macroquad::prelude::{is_key_down, is_key_pressed, KeyCode};
+use macroquad::prelude::{is_key_down, is_key_pressed, Color, KeyCode};
 use macroquad::window::clear_background;
 
 use crate::camera::{Camera, ShakeConfig};
 use crate::scenes::objects::player::Player;
 use crate::scenes::objects::shapes::rect::Rect;
+use crate::util::hex_to_color;
 use crate::{pub_global_variable, repeat_for_vec, Object};
 
 use super::object::IDObject;
@@ -27,9 +28,16 @@ impl GameScene {
         GameScene {
             player: Player::new(),
             objects: vec![Box::new(TestObj::new())],
-            walls: vec![Rect::new(100.0, 100.0, 50.0, 50.0)],
+            walls: vec![Rect::new(100.0, 100.0, 500.0, 50.0)],
             enemies: vec![Enemy::new(200.0, 200.0, 10.0)],
             camera: Camera::new(),
+        }
+    }
+
+    pub async fn init(&self) {
+        load_image("./assets/guns/border.png").await;
+        for gun in GUNS {
+            load_image(gun.image_file).await;
         }
     }
 }
@@ -41,7 +49,7 @@ impl Object for GameScene {
     }
 
     fn draw(&mut self) {
-        clear_background(BLACK);
+        clear_background(hex_to_color("#313639"));
 
         for wall in &mut self.walls {
             wall.draw(WHITE)

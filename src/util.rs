@@ -161,3 +161,12 @@ macro_rules! repeat_for_vec {
         )*
     };
 }
+
+pub(crate) fn hex_to_color(hex: &'static str) -> Color {
+    Color::from_rgba(
+        u8::from_str_radix(&hex[1..3], 16).unwrap(),
+        u8::from_str_radix(&hex[3..5], 16).unwrap(),
+        u8::from_str_radix(&hex[5..7], 16).unwrap(),
+        255,
+    )
+}
