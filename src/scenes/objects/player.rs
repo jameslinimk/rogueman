@@ -1,4 +1,4 @@
-use crate::camera::{ShakeConfig, CAMERA};
+use crate::camera::ShakeConfig;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::util::{
     angle, multiline_text, rel_mouse_pos, rx, rx_smooth, ry, ry_smooth, NUMBER_KEYS,
@@ -112,7 +112,7 @@ impl Player {
         }
 
         /* ---------------------------------- Misc ---------------------------------- */
-        CAMERA().target = self.rect.get_center();
+        GAME().camera.target = self.rect.get_center();
     }
 
     fn get_gun(&self) -> Option<Gun> {
@@ -126,7 +126,7 @@ impl Player {
         match self.get_gun() {
             Some(gun) => {
                 if self.last_shot == 0.0 || get_time() > self.last_shot + gun.fire_delay as f64 {
-                    CAMERA().set_shake(gun.shake);
+                    GAME().camera.set_shake(gun.shake);
 
                     let angle = angle(self.rect.get_center(), rel_mouse_pos());
                     GAME().objects.push(Box::new(Bullet::new(

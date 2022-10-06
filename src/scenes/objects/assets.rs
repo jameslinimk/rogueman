@@ -16,7 +16,10 @@ pub(crate) fn get_image(path: &str) -> Option<Texture2D> {
     };
 }
 
-pub(crate) async fn load_image(path: &str) -> Texture2D {
+pub(crate) async fn load_image(path: &'static str) -> Texture2D {
+    if ASSET_MAP.lock().unwrap().contains_key(path) {
+        return get_image(path).unwrap();
+    }
     let resource = load_texture(path).await.unwrap();
     ASSET_MAP.lock().unwrap().insert(path, resource.to_owned());
     return resource;

@@ -4,10 +4,7 @@ use macroquad::prelude::{screen_height, screen_width};
 use macroquad::rand::gen_range;
 use macroquad::time::{get_frame_time, get_time};
 
-use crate::pub_global_variable;
 use crate::util::{angle, distance, ease_in_out, project};
-
-pub_global_variable!(CAMERA, _CAMERA, Camera);
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct ShakeConfig {

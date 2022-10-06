@@ -6,7 +6,7 @@ use macroquad::{
     window::{screen_height, screen_width},
 };
 
-use crate::camera::CAMERA;
+use crate::scenes::game::GAME;
 
 pub(crate) const NUMBER_KEYS: [KeyCode; 4] =
     [KeyCode::Key1, KeyCode::Key2, KeyCode::Key3, KeyCode::Key4];
@@ -47,42 +47,42 @@ pub(crate) fn rad_to_deg(radians: f32) -> f32 {
 
 /// It returns the x position relative to the screen
 pub(crate) fn rx(x: f32) -> f32 {
-    let shake_offset = if CAMERA().shake.is_none() {
+    let shake_offset = if GAME().camera.shake.is_none() {
         0.0
     } else {
-        CAMERA().shake_offset.x
+        GAME().camera.shake_offset.x
     };
-    return x - (screen_width() / 2.0 - CAMERA().camera.target.x - shake_offset);
+    return x - (screen_width() / 2.0 - GAME().camera.camera.target.x - shake_offset);
 }
 
 /// It returns the y position relative to the screen
 pub(crate) fn ry(y: f32) -> f32 {
-    let shake_offset = if CAMERA().shake.is_none() {
+    let shake_offset = if GAME().camera.shake.is_none() {
         0.0
     } else {
-        CAMERA().shake_offset.y
+        GAME().camera.shake_offset.y
     };
-    return y - (screen_height() / 2.0 - CAMERA().camera.target.y - shake_offset);
+    return y - (screen_height() / 2.0 - GAME().camera.camera.target.y - shake_offset);
 }
 
 /// It returns the x position relative to the screen (counteracted to adjust for shake)
 pub(crate) fn rx_smooth(x: f32) -> f32 {
-    let shake_offset = if CAMERA().shake.is_none() {
+    let shake_offset = if GAME().camera.shake.is_none() {
         0.0
     } else {
-        CAMERA().shake_offset.x
+        GAME().camera.shake_offset.x
     };
-    return x - (screen_width() / 2.0 - CAMERA().camera.target.x + shake_offset);
+    return x - (screen_width() / 2.0 - GAME().camera.camera.target.x + shake_offset);
 }
 
 /// It returns the y position relative to the screen (counteracted to adjust for shake)
 pub(crate) fn ry_smooth(y: f32) -> f32 {
-    let shake_offset = if CAMERA().shake.is_none() {
+    let shake_offset = if GAME().camera.shake.is_none() {
         0.0
     } else {
-        CAMERA().shake_offset.y
+        GAME().camera.shake_offset.y
     };
-    return y - (screen_height() / 2.0 - CAMERA().camera.target.y + shake_offset);
+    return y - (screen_height() / 2.0 - GAME().camera.camera.target.y + shake_offset);
 }
 
 /// It returns the mouse position relative to the screen

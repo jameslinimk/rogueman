@@ -2,10 +2,11 @@ mod camera;
 mod scenes;
 mod util;
 
-use crate::camera::CAMERA;
 use crate::scenes::game::GAME;
 use crate::scenes::object::Object;
 use macroquad::prelude::*;
+use scenes::objects::assets::load_image;
+use scenes::objects::guns::GUNS;
 
 fn config() -> Conf {
     Conf {
@@ -19,7 +20,9 @@ fn config() -> Conf {
 
 #[macroquad::main(config)]
 async fn main() {
-    CAMERA();
+    for gun in GUNS {
+        load_image(gun.image_file).await;
+    }
 
     loop {
         GAME().update();

@@ -2,13 +2,15 @@ use macroquad::color::{BLACK, WHITE};
 use macroquad::prelude::{is_key_down, is_key_pressed, KeyCode};
 use macroquad::window::clear_background;
 
-use crate::camera::{ShakeConfig, CAMERA};
+use crate::camera::{Camera, ShakeConfig};
 use crate::scenes::objects::player::Player;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::{pub_global_variable, repeat_for_vec, Object};
 
 use super::object::IDObject;
+use super::objects::assets::load_image;
 use super::objects::enemy::Enemy;
+use super::objects::guns::GUNS;
 use super::objects::test::TestObj;
 
 pub_global_variable!(GAME, _GAME, GameScene);
@@ -18,6 +20,7 @@ pub(crate) struct GameScene {
     pub objects: Vec<Box<dyn IDObject>>,
     pub walls: Vec<Rect>,
     pub enemies: Vec<Enemy>,
+    pub camera: Camera,
 }
 impl GameScene {
     pub fn new() -> GameScene {
@@ -26,15 +29,15 @@ impl GameScene {
             objects: vec![Box::new(TestObj::new())],
             walls: vec![Rect::new(100.0, 100.0, 50.0, 50.0)],
             enemies: vec![Enemy::new(200.0, 200.0, 10.0)],
+            camera: Camera::new(),
         }
     }
 }
 impl Object for GameScene {
     fn update(&mut self) {
-        CAMERA().update();
-
         repeat_for_vec!(update, self.enemies, self.objects);
         self.player.update();
+        self.camera.update();
     }
 
     fn draw(&mut self) {
