@@ -32,7 +32,7 @@ pub(crate) struct Player {
 impl Player {
     pub fn new() -> Player {
         Player {
-            rect: Rect::new_center(0.0, 0.0, 30.0, 30.0),
+            rect: Rect::new_center(-100.0, -100.0, 30.0, 30.0),
             speed: 500.0,
             last_shot: 0.0,
             max_health: 100.0,

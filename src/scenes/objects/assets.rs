@@ -2,9 +2,10 @@ use std::{collections::HashMap, hash::Hash, sync::Mutex};
 
 use lazy_static::lazy_static;
 use macroquad::texture::{load_texture, Texture2D};
+use maplit::hashmap;
 
 lazy_static! {
-    static ref ASSET_MAP: Mutex<HashMap<&'static str, Texture2D>> = Mutex::new(HashMap::new());
+    static ref ASSET_MAP: Mutex<HashMap<&'static str, Texture2D>> = Mutex::new(hashmap!());
 }
 
 pub(crate) fn get_image(path: &str) -> Option<Texture2D> {

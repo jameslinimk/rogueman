@@ -1,5 +1,6 @@
 use macroquad::color::{BLACK, WHITE};
 use macroquad::prelude::{is_key_down, is_key_pressed, Color, KeyCode};
+use macroquad::rand::gen_range;
 use macroquad::window::clear_background;
 
 use crate::camera::{Camera, ShakeConfig};
@@ -13,6 +14,7 @@ use super::objects::assets::load_image;
 use super::objects::enemy::Enemy;
 use super::objects::guns::GUNS;
 use super::objects::test::TestObj;
+use super::rooms::{Objects, ROOMS};
 
 pub_global_variable!(GAME, _GAME, GameScene);
 
@@ -25,10 +27,26 @@ pub(crate) struct GameScene {
 }
 impl GameScene {
     pub fn new() -> GameScene {
+        let mut walls: Vec<Rect> = vec![];
+
+        let rooms = ROOMS.lock().unwrap();
+        let room_index = gen_range(0, rooms.len());
+
+        for (y, line) in rooms[room_index].iter().enumerate() {
+            for (x, obj) in line.iter().enumerate() {
+                match obj {
+                    Objects::AIR => {}
+                    Objects::WALL => {
+                        walls.push(Rect::new(x as f32 * 64.0, y as f32 * 64.0, 64.0, 64.0));
+                    }
+                }
+            }
+        }
+
         GameScene {
             player: Player::new(),
             objects: vec![Box::new(TestObj::new())],
-            walls: vec![Rect::new(100.0, 100.0, 500.0, 50.0)],
+            walls,
             enemies: vec![Enemy::new(200.0, 200.0, 10.0)],
             camera: Camera::new(),
         }
