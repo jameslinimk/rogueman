@@ -159,14 +159,6 @@ impl Player {
             50,
             WHITE,
         );
-
-        async {
-            if gun.is_some() {
-                println!("draw");
-                let gun_image = get_image(gun.unwrap().image_file).await;
-                draw_texture(gun_image, rx_smooth(100.0), ry_smooth(100.0), WHITE);
-            }
-        }
     }
 
     pub fn draw(&mut self) {
