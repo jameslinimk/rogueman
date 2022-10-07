@@ -60,22 +60,21 @@ impl Player {
             hspd += 1.0
         }
 
-        // Band-aid patch for diagonal movement
-        let dia = if hspd != 0.0 && vspd != 0.0 {
-            0.707
-        } else {
-            1.0
-        };
+        let dt = get_frame_time();
+        let speed = self.speed * dt;
 
-        let ft = get_frame_time();
-        hspd *= self.speed * ft * dia;
-        vspd *= self.speed * ft * dia;
+        hspd *= speed;
+        vspd *= speed;
+
+        // Fixing diagonal movement
+        if hspd != 0.0 && vspd != 0.0 {
+            hspd *= 0.707;
+            vspd *= 0.707;
+        }
 
         /* --------------------------- Collision detection -------------------------- */
-        // TODO Collision
-        let og_pos = self.rect.pos;
+        self.rect.pos.x += hspd;
         for wall in &GAME().walls {
-            self.rect.pos.x = og_pos.x + hspd;
             if self.rect.touches(wall) {
                 if self.rect.pos.x > wall.pos.x {
                     self.rect.set_left(wall.get_right());
@@ -83,8 +82,10 @@ impl Player {
                     self.rect.set_right(wall.get_left());
                 }
             }
+        }
 
-            self.rect.pos.y = og_pos.y + vspd;
+        self.rect.pos.y += vspd;
+        for wall in &GAME().walls {
             if self.rect.touches(wall) {
                 if self.rect.pos.y > wall.pos.y {
                     self.rect.set_top(wall.get_bottom());

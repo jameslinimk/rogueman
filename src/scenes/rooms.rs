@@ -24,7 +24,7 @@ pub(crate) async fn init_rooms() {
         let mut data: Vec<Vec<Objects>> = vec![];
         for line in room.split("\n") {
             let mut line_vec: Vec<Objects> = vec![];
-            for char in line.trim().split("") {
+            for char in line.split("") {
                 let obj = OBJECT_KEYS.get(char);
                 if obj.is_none() {
                     continue;

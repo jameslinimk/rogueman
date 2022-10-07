@@ -1,7 +1,7 @@
 use lazy_static::lazy_static;
 use macroquad::color::{BLACK, WHITE};
 use macroquad::prelude::{is_key_down, is_key_pressed, Color, KeyCode};
-use macroquad::rand::gen_range;
+use macroquad::rand::{gen_range, ChooseRandom};
 use macroquad::window::clear_background;
 
 use crate::camera::{Camera, ShakeConfig};
@@ -31,9 +31,9 @@ impl GameScene {
         let mut walls: Vec<Rect> = vec![];
 
         let rooms = ROOMS.lock().unwrap();
-        let room_index = gen_range(0, rooms.len());
+        let rand_room = rooms.choose().unwrap();
 
-        for (y, line) in rooms[room_index].iter().enumerate() {
+        for (y, line) in rand_room.iter().enumerate() {
             for (x, obj) in line.iter().enumerate() {
                 match obj {
                     Objects::AIR => {}
