@@ -1,8 +1,11 @@
+use enum_dispatch::enum_dispatch;
+
 pub(crate) trait Object {
     fn update(&mut self);
     fn draw(&mut self);
 }
 
+#[enum_dispatch]
 pub(crate) trait IDObject {
     fn update(&mut self);
     fn draw(&mut self);

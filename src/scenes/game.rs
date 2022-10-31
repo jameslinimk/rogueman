@@ -7,21 +7,22 @@ use macroquad::window::clear_background;
 use crate::camera::{Camera, ShakeConfig};
 use crate::scenes::objects::player::Player;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::hex_to_color;
+use crate::util::hex;
 use crate::{pub_global_variable, repeat_for_vec, Object};
 
 use super::object::IDObject;
 use super::objects::assets::load_image;
-use super::objects::enemy::Enemy;
-use super::objects::guns::GUNS;
+use super::objects::enemies::enemy::Enemy;
+use super::objects::items::guns::GUNS;
+use super::objects::objects::Objects;
 use super::objects::test::TestObj;
-use super::rooms::{Objects, ROOMS};
+use super::rooms::{Objects as RoomObjects, ROOMS};
 
 pub_global_variable!(GAME, _GAME, GameScene);
 
 pub(crate) struct GameScene {
     pub player: Player,
-    pub objects: Vec<Box<dyn IDObject>>,
+    pub objects: Vec<Objects>,
     pub walls: Vec<Rect>,
     pub enemies: Vec<Enemy>,
     pub camera: Camera,
@@ -36,8 +37,8 @@ impl GameScene {
         for (y, line) in rand_room.iter().enumerate() {
             for (x, obj) in line.iter().enumerate() {
                 match obj {
-                    Objects::AIR => {}
-                    Objects::WALL => {
+                    RoomObjects::AIR => {}
+                    RoomObjects::WALL => {
                         walls.push(Rect::new(x as f32 * 30.0, y as f32 * 30.0, 30.0, 30.0));
                     }
                 }
@@ -46,7 +47,7 @@ impl GameScene {
 
         GameScene {
             player: Player::new(),
-            objects: vec![Box::new(TestObj::new())],
+            objects: vec![],
             walls,
             enemies: vec![Enemy::new(200.0, 200.0, 10.0)],
             camera: Camera::new(),
@@ -68,7 +69,7 @@ impl Object for GameScene {
     }
 
     fn draw(&mut self) {
-        clear_background(hex_to_color("#313639"));
+        clear_background(hex("#313639"));
 
         self.player.draw();
         repeat_for_vec!(draw, self.objects, self.enemies);

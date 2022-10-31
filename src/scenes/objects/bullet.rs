@@ -33,6 +33,7 @@ pub(crate) struct Bullet {
     angle: f32,
     rect: Rect,
     created: f64,
+    traveled_through: u8,
     config: BulletConfig,
     id: u32,
 }
@@ -45,12 +46,47 @@ impl Bullet {
         };
 
         return Bullet {
+            traveled_through: 0,
             angle: angle + spread,
             rect: Rect::new_center_vec(pos, config.bullet_size, config.bullet_size),
             config,
             created: get_time(),
             id: obj_id(),
         };
+    }
+}
+impl Bullet {
+    fn update_collision(&mut self) {
+        for wall in &mut GAME().walls {
+            if self.rect.touches(&wall) {
+                game_remove!(GAME().objects, self.id);
+                return;
+            }
+        }
+
+        if self.config.friendly {
+            for enemy in &mut GAME().enemies {
+                if self.rect.touches(&enemy.rect) {
+                    enemy.hit(self.config.damage);
+
+                    self.traveled_through += 1;
+                    if self.traveled_through > self.config.pierce {
+                        game_remove!(GAME().objects, self.id);
+                        return;
+                    }
+                }
+            }
+        } else {
+            if self.rect.touches(&GAME().player.rect) {
+                GAME().player.hit(self.config.damage);
+
+                self.traveled_through += 1;
+                if self.traveled_through > self.config.pierce {
+                    game_remove!(GAME().objects, self.id);
+                    return;
+                }
+            }
+        }
     }
 }
 impl IDObject for Bullet {
@@ -65,17 +101,7 @@ impl IDObject for Bullet {
             self.config.speed * get_frame_time(),
         ));
 
-        if self.config.friendly {
-            for enemy in &mut GAME().enemies {
-                if self.rect.touches(&enemy.rect) {
-                    enemy.hit(self.config.damage);
-                }
-            }
-        } else {
-            if self.rect.touches(&GAME().player.rect) {
-                GAME().player.hit(self.config.damage);
-            }
-        }
+        self.update_collision();
     }
 
     fn draw(&mut self) {

@@ -1,18 +1,6 @@
-use macroquad::texture::{load_image, Image};
+use crate::{camera::ShakeConfig, scenes::objects::bullet::BulletConfig};
 
-use crate::camera::ShakeConfig;
-
-use super::bullet::BulletConfig;
-
-#[derive(Debug, Clone, Copy)]
-pub(crate) enum Rarities {
-    COMMON,
-    UNCOMMON,
-    RARE,
-    EPIC,
-    LEGENDARY,
-    UNIQUE,
-}
+use super::items::Rarities;
 
 #[derive(Debug, Clone, Copy)]
 pub(crate) struct Gun {

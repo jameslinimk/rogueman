@@ -17,7 +17,8 @@ use macroquad::window::{screen_height, screen_width};
 
 use super::assets::get_image;
 use super::bullet::{Bullet, BulletConfig};
-use super::guns::{Gun, GUNS};
+use super::items::guns::{Gun, GUNS};
+use super::objects::Objects;
 
 #[derive(Debug)]
 pub(crate) struct Player {
@@ -43,6 +44,14 @@ impl Player {
     }
 
     pub fn update(&mut self) {
+        self.update_movement();
+        self.update_shoot();
+        self.update_melee();
+
+        GAME().camera.target = self.rect.get_center();
+    }
+
+    fn update_movement(&mut self) {
         /* -------------------------------- Movement -------------------------------- */
         let mut hspd = 0.0;
         let mut vspd = 0.0;
@@ -94,13 +103,15 @@ impl Player {
                 }
             }
         }
+    }
 
+    fn update_shoot(&mut self) {
         /* -------------------------------- Shooting -------------------------------- */
         match self.get_gun() {
             Some(gun) => {
-                if gun.holdable && is_mouse_button_down(MouseButton::Left) {
+                if gun.holdable && is_mouse_button_down(MouseButton::Right) {
                     self.shoot();
-                } else if is_mouse_button_pressed(MouseButton::Left) {
+                } else if is_mouse_button_pressed(MouseButton::Right) {
                     self.shoot();
                 }
             }
@@ -114,10 +125,9 @@ impl Player {
                 self.last_shot = get_time();
             }
         }
-
-        /* ---------------------------------- Misc ---------------------------------- */
-        GAME().camera.target = self.rect.get_center();
     }
+
+    fn update_melee(&mut self) {}
 
     fn get_gun(&self) -> Option<Gun> {
         if self.selected_gun >= self.guns.len() {
@@ -133,7 +143,7 @@ impl Player {
                     GAME().camera.set_shake(gun.shake);
 
                     let angle = angle(self.rect.get_center(), rel_mouse_pos());
-                    GAME().objects.push(Box::new(Bullet::new(
+                    GAME().objects.push(Objects::from(Bullet::new(
                         angle,
                         self.rect.get_center(),
                         gun.bullet_config,
