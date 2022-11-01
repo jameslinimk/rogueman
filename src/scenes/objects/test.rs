@@ -1,5 +1,6 @@
 use macroquad::{
     prelude::{mouse_position, RED, YELLOW},
+    shapes::draw_rectangle,
     time::get_frame_time,
 };
 
@@ -33,6 +34,9 @@ impl IDObject for TestObj {
     fn draw(&mut self) {
         self.rect.draw(YELLOW);
         let test = Line::new(GAME().player.rect.get_center(), rel_mouse_pos(), 10.0);
+        for p in &test.points {
+            draw_rectangle(p.x, p.y, 5.0, 5.0, RED);
+        }
         test.draw(RED);
     }
 

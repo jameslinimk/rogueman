@@ -52,10 +52,27 @@ pub struct Line {
     p1: Vec2,
     p2: Vec2,
     thickness: f32,
+    pub points: Vec<Vec2>,
 }
 impl Line {
     pub fn new(p1: Vec2, p2: Vec2, thickness: f32) -> Line {
-        Line { p1, p2, thickness }
+        let width = p2.x - p1.x;
+        let height = p2.y - p1.y;
+        let length = distance(p1, p2);
+        let xs = (thickness * height / length) / 2.0;
+        let ys = (thickness * width / length) / 2.0;
+
+        Line {
+            p1,
+            p2,
+            thickness,
+            points: vec![
+                vec2(p1.x - xs, p1.y - ys),
+                vec2(p1.x + xs, p1.y + ys),
+                vec2(p2.x + xs, p2.y - ys),
+                vec2(p2.x - xs, p2.y - ys),
+            ],
+        }
     }
 
     pub fn draw(&self, color: Color) {
@@ -70,19 +87,8 @@ impl Line {
     }
 
     pub fn touches_line(&self, rect: &Rect) -> bool {
-        let width = self.p2.x - self.p1.x;
-        let height = self.p2.y - self.p1.y;
-        let length = distance(self.p1, self.p2);
-        let xS = (self.thickness * height / length) / 2.0;
-        let yS = (self.thickness * width / length) / 2.0;
-
         polygons_intersect(&[
-            vec![
-                vec2(self.p1.x - xS, self.p1.y - yS),
-                vec2(self.p1.x + xS, self.p1.y + yS),
-                vec2(self.p2.x + xS, self.p2.y - yS),
-                vec2(self.p2.x - xS, self.p2.y - yS),
-            ],
+            self.points.to_vec(),
             vec![
                 vec2(rect.pos.x, rect.pos.y),
                 vec2(rect.pos.x + rect.width, rect.pos.y),
