@@ -4,10 +4,10 @@ use macroquad::math::Vec2;
 use macroquad::shapes::draw_rectangle;
 
 #[derive(Debug, Copy, Clone)]
-pub(crate) struct Rect {
-    pub(crate) pos: Vec2,
-    pub(crate) width: f32,
-    pub(crate) height: f32,
+pub struct Rect {
+    pub pos: Vec2,
+    pub width: f32,
+    pub height: f32,
 }
 impl Rect {
     /// Create a new rect from top-left point
@@ -73,7 +73,7 @@ impl Rect {
         self.pos.x = left;
     }
 
-    pub fn touches(&self, rect: &Rect) -> bool {
+    pub fn touches_rect(&self, rect: &Rect) -> bool {
         return self.pos.x < rect.get_right()
             && self.get_right() > rect.pos.x
             && self.pos.y < rect.get_bottom()

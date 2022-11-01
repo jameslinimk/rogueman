@@ -3,7 +3,7 @@ use crate::{camera::ShakeConfig, scenes::objects::bullet::BulletConfig};
 use super::items::Rarities;
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct Gun {
+pub struct Gun {
     pub name: &'static str,
     pub image_file: &'static str,
     pub holdable: bool,
@@ -58,4 +58,4 @@ const SMG: Gun = Gun {
     },
 };
 
-pub(crate) const GUNS: [Gun; 2] = [PISTOL, SMG];
+pub const GUNS: [Gun; 2] = [PISTOL, SMG];

@@ -5,7 +5,7 @@ use macroquad::prelude::load_string;
 use maplit::hashmap;
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) enum Objects {
+pub enum Objects {
     AIR,
     WALL,
 }
@@ -15,10 +15,10 @@ lazy_static! {
         " " => Objects::AIR,
         "#" => Objects::WALL,
     };
-    pub(crate) static ref ROOMS: Mutex<Vec<Vec<Vec<Objects>>>> = Mutex::new(vec![]);
+    pub static ref ROOMS: Mutex<Vec<Vec<Vec<Objects>>>> = Mutex::new(vec![]);
 }
 
-pub(crate) async fn init_rooms() {
+pub async fn init_rooms() {
     let txt = load_string("./assets/rooms.txt").await.unwrap();
     for room in txt.split("\n\n") {
         let mut data: Vec<Vec<Objects>> = vec![];

@@ -1,13 +1,13 @@
 use super::items::Rarities;
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct Melee {
+pub struct Melee {
     pub name: &'static str,
     pub image_file: &'static str,
     damage: f32,
     range: f32,
     range_width: f32,
-    delay: f32,
+    pub delay: f32,
     rarity: Rarities,
 }
 
@@ -21,4 +21,4 @@ const POCKET_KNIFE: Melee = Melee {
     rarity: Rarities::COMMON,
 };
 
-pub(crate) const MELEES: [Melee; 1] = [POCKET_KNIFE];
+pub const MELEES: [Melee; 1] = [POCKET_KNIFE];

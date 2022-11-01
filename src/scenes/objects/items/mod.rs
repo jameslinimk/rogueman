@@ -1,3 +1,3 @@
-pub(crate) mod guns;
-pub(crate) mod items;
-pub(crate) mod melee;
+pub mod guns;
+pub mod items;
+pub mod melee;

@@ -6,7 +6,7 @@ use crate::{
     util::{angle, project},
 };
 
-pub(crate) struct Enemy {
+pub struct Enemy {
     pub rect: Rect,
     speed: f32,
     pub max_health: f32,

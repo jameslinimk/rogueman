@@ -1,16 +1,19 @@
-use macroquad::time::get_frame_time;
+use macroquad::{
+    prelude::{mouse_position, RED, YELLOW},
+    time::get_frame_time,
+};
 
 use crate::{
     scenes::{
         game::GAME,
         object::{obj_id, IDObject},
     },
-    util::{angle, project},
+    util::{angle, project, rel_mouse_pos},
 };
 
-use super::shapes::rect::Rect;
+use super::shapes::{line::Line, rect::Rect};
 
-pub(crate) struct TestObj {
+pub struct TestObj {
     rect: Rect,
     speed: f32,
     id: u32,
@@ -25,17 +28,12 @@ impl TestObj {
     }
 }
 impl IDObject for TestObj {
-    fn update(&mut self) {
-        let angle = angle(self.rect.get_center(), GAME().player.rect.get_center());
-        self.rect.set_center_vec(project(
-            self.rect.get_center(),
-            angle,
-            self.speed * get_frame_time(),
-        ))
-    }
+    fn update(&mut self) {}
 
     fn draw(&mut self) {
-        // self.rect.draw(YELLOW);
+        self.rect.draw(YELLOW);
+        let test = Line::new(GAME().player.rect.get_center(), rel_mouse_pos(), 10.0);
+        test.draw(RED);
     }
 
     fn get_id(&self) -> u32 {

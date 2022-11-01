@@ -16,7 +16,7 @@ use crate::{
 use super::shapes::rect::Rect;
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct BulletConfig {
+pub struct BulletConfig {
     pub speed: f32,
     pub max_lifespan: f32,
     /// Bullet spread in degrees
@@ -29,7 +29,7 @@ pub(crate) struct BulletConfig {
     pub friendly: bool,
 }
 
-pub(crate) struct Bullet {
+pub struct Bullet {
     angle: f32,
     rect: Rect,
     created: f64,
@@ -58,7 +58,7 @@ impl Bullet {
 impl Bullet {
     fn update_collision(&mut self) {
         for wall in &mut GAME().walls {
-            if self.rect.touches(&wall) {
+            if self.rect.touches_rect(&wall) {
                 game_remove!(GAME().objects, self.id);
                 return;
             }
@@ -66,7 +66,7 @@ impl Bullet {
 
         if self.config.friendly {
             for enemy in &mut GAME().enemies {
-                if self.rect.touches(&enemy.rect) {
+                if self.rect.touches_rect(&enemy.rect) {
                     enemy.hit(self.config.damage);
 
                     self.traveled_through += 1;
@@ -77,7 +77,7 @@ impl Bullet {
                 }
             }
         } else {
-            if self.rect.touches(&GAME().player.rect) {
+            if self.rect.touches_rect(&GAME().player.rect) {
                 GAME().player.hit(self.config.damage);
 
                 self.traveled_through += 1;

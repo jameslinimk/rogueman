@@ -19,10 +19,11 @@ use super::items::melee::{Melee, MELEES};
 use super::objects::Objects;
 
 #[derive(Debug)]
-pub(crate) struct Player {
+pub struct Player {
     pub rect: Rect,
     speed: f32,
     last_shot: f64,
+    last_melee: f64,
     max_health: f32,
     health: f32,
     guns: Vec<Gun>,
@@ -36,6 +37,7 @@ impl Player {
             rect: Rect::new_center(-100.0, -100.0, 30.0, 30.0),
             speed: 500.0,
             last_shot: 0.0,
+            last_melee: 0.0,
             max_health: 100.0,
             health: 100.0,
             guns: GUNS.to_vec(),
@@ -86,7 +88,7 @@ impl Player {
         /* --------------------------- Collision detection -------------------------- */
         self.rect.pos.x += hspd;
         for wall in &GAME().walls {
-            if self.rect.touches(wall) {
+            if self.rect.touches_rect(wall) {
                 if self.rect.pos.x > wall.pos.x {
                     self.rect.set_left(wall.get_right());
                 } else {
@@ -97,7 +99,7 @@ impl Player {
 
         self.rect.pos.y += vspd;
         for wall in &GAME().walls {
-            if self.rect.touches(wall) {
+            if self.rect.touches_rect(wall) {
                 if self.rect.pos.y > wall.pos.y {
                     self.rect.set_top(wall.get_bottom());
                 } else {
@@ -113,19 +115,21 @@ impl Player {
             None => return,
         };
 
-        /* -------------------------------- Shooting -------------------------------- */
-        if gun.holdable && is_mouse_button_down(MouseButton::Right) {
-            self.shoot();
-        } else if is_mouse_button_pressed(MouseButton::Right) {
-            self.shoot();
-        }
-
         /* ---------------------------- Switching weapons --------------------------- */
         if is_key_pressed(KeyCode::G) {
             self.selected_gun += 1;
             if self.selected_gun >= self.guns.len() {
                 self.selected_gun = 0;
             }
+        }
+
+        /* -------------------------------- Shooting -------------------------------- */
+        if if gun.holdable {
+            is_mouse_button_down(MouseButton::Right)
+        } else {
+            is_mouse_button_pressed(MouseButton::Right)
+        } {
+            self.shoot();
         }
     }
 
@@ -138,6 +142,12 @@ impl Player {
         for (i, key) in NUMBER_KEYS.iter().enumerate() {
             if is_key_pressed(*key) && i < self.melees.len() {
                 self.selected_melee = i;
+            }
+        }
+
+        if self.last_melee == 0.0 || get_time() > self.last_melee + melee.delay as f64 {
+            if is_mouse_button_pressed(MouseButton::Left) {
+                println!("Swing")
             }
         }
     }
@@ -225,21 +235,21 @@ impl Player {
     pub fn draw(&mut self) {
         self.rect.draw(WHITE);
 
-        let mouse_pos = rel_mouse_pos();
+        // let mouse_pos = rel_mouse_pos();
 
-        // Extend line by length
-        let length = screen_height() + screen_width();
-        let alpha =
-            (mouse_pos.y - self.rect.get_center().y).atan2(mouse_pos.x - self.rect.get_center().x);
+        // // Extend line by length
+        // let length = screen_height() + screen_width();
+        // let alpha =
+        //     (mouse_pos.y - self.rect.get_center().y).atan2(mouse_pos.x - self.rect.get_center().x);
 
-        draw_line(
-            self.rect.get_center().x,
-            self.rect.get_center().y,
-            mouse_pos.x + length * alpha.cos(),
-            mouse_pos.y + length * alpha.sin(),
-            2.0,
-            BLUE,
-        );
+        // draw_line(
+        //     self.rect.get_center().x,
+        //     self.rect.get_center().y,
+        //     mouse_pos.x + length * alpha.cos(),
+        //     mouse_pos.y + length * alpha.sin(),
+        //     2.0,
+        //     BLUE,
+        // );
 
         self.draw_ui();
     }

@@ -7,12 +7,12 @@ use macroquad::time::{get_frame_time, get_time};
 use crate::util::{angle, distance, ease_in_out, project};
 
 #[derive(Debug, Clone, Copy)]
-pub(crate) struct ShakeConfig {
+pub struct ShakeConfig {
     pub duration: f32,
     pub intensity: f32,
 }
 
-pub(crate) struct Camera {
+pub struct Camera {
     pub camera: Camera2D,
     pub target: Vec2,
     pub shake: Option<ShakeConfig>,

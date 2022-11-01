@@ -1,1 +1,1 @@
-pub(crate) mod enemy;
+pub mod enemy;

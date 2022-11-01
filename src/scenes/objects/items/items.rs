@@ -1,5 +1,5 @@
 #[derive(Debug, Clone, Copy)]
-pub(crate) enum Rarities {
+pub enum Rarities {
     COMMON,
     UNCOMMON,
     RARE,

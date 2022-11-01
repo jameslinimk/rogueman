@@ -8,7 +8,7 @@ lazy_static! {
     static ref ASSET_MAP: Mutex<HashMap<&'static str, Texture2D>> = Mutex::new(hashmap!());
 }
 
-pub(crate) fn get_image(path: &str) -> Option<Texture2D> {
+pub fn get_image(path: &str) -> Option<Texture2D> {
     match ASSET_MAP.lock().unwrap().get(path) {
         Some(texture) => {
             return Option::from(texture.to_owned());
@@ -17,7 +17,7 @@ pub(crate) fn get_image(path: &str) -> Option<Texture2D> {
     };
 }
 
-pub(crate) async fn load_image(path: &'static str) -> Texture2D {
+pub async fn load_image(path: &'static str) -> Texture2D {
     if ASSET_MAP.lock().unwrap().contains_key(path) {
         return get_image(path).unwrap();
     }

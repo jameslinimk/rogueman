@@ -1,4 +1,4 @@
-pub(crate) mod game;
-pub(crate) mod object;
-pub(crate) mod objects;
-pub(crate) mod rooms;
+pub mod game;
+pub mod object;
+pub mod objects;
+pub mod rooms;
