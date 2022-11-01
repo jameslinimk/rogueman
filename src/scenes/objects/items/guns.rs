@@ -14,8 +14,6 @@ pub(crate) struct Gun {
     pub shake: ShakeConfig,
 }
 
-const GUNS_LENGTH: usize = 2;
-
 const PISTOL: Gun = Gun {
     name: "Pistol",
     image_file: "./assets/guns/pistol.png",
@@ -60,4 +58,4 @@ const SMG: Gun = Gun {
     },
 };
 
-pub(crate) const GUNS: [Gun; GUNS_LENGTH] = [PISTOL, SMG];
+pub(crate) const GUNS: [Gun; 2] = [PISTOL, SMG];

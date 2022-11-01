@@ -1,8 +1,5 @@
-use crate::camera::ShakeConfig;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::{
-    angle, multiline_text, rel_mouse_pos, rx, rx_smooth, ry, ry_smooth, NUMBER_KEYS,
-};
+use crate::util::{angle, multiline_text, rel_mouse_pos, rx_smooth, ry_smooth, NUMBER_KEYS};
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
@@ -10,14 +7,15 @@ use macroquad::prelude::{
     is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, Color, MouseButton,
 };
 use macroquad::shapes::{draw_line, draw_rectangle};
-use macroquad::text::draw_text;
+
 use macroquad::texture::draw_texture;
 use macroquad::time::{get_frame_time, get_time};
 use macroquad::window::{screen_height, screen_width};
 
 use super::assets::get_image;
-use super::bullet::{Bullet, BulletConfig};
+use super::bullet::Bullet;
 use super::items::guns::{Gun, GUNS};
+use super::items::melee::{Melee, MELEES};
 use super::objects::Objects;
 
 #[derive(Debug)]
@@ -29,6 +27,8 @@ pub(crate) struct Player {
     health: f32,
     guns: Vec<Gun>,
     selected_gun: usize,
+    melees: Vec<Melee>,
+    selected_melee: usize,
 }
 impl Player {
     pub fn new() -> Player {
@@ -40,6 +40,8 @@ impl Player {
             health: 100.0,
             guns: GUNS.to_vec(),
             selected_gun: 0,
+            melees: MELEES.to_vec(),
+            selected_melee: 0,
         }
     }
 
@@ -106,52 +108,70 @@ impl Player {
     }
 
     fn update_shoot(&mut self) {
-        /* -------------------------------- Shooting -------------------------------- */
-        match self.get_gun() {
-            Some(gun) => {
-                if gun.holdable && is_mouse_button_down(MouseButton::Right) {
-                    self.shoot();
-                } else if is_mouse_button_pressed(MouseButton::Right) {
-                    self.shoot();
-                }
-            }
-            None => {}
+        let gun = match self.get_gun() {
+            Some(gun) => gun,
+            None => return,
         };
 
+        /* -------------------------------- Shooting -------------------------------- */
+        if gun.holdable && is_mouse_button_down(MouseButton::Right) {
+            self.shoot();
+        } else if is_mouse_button_pressed(MouseButton::Right) {
+            self.shoot();
+        }
+
         /* ---------------------------- Switching weapons --------------------------- */
-        for (i, key) in NUMBER_KEYS.iter().enumerate() {
-            if is_key_pressed(*key) && i < self.guns.len() {
-                self.selected_gun = i;
-                self.last_shot = get_time();
+        if is_key_pressed(KeyCode::G) {
+            self.selected_gun += 1;
+            if self.selected_gun >= self.guns.len() {
+                self.selected_gun = 0;
             }
         }
     }
 
-    fn update_melee(&mut self) {}
+    fn update_melee(&mut self) {
+        let melee = match self.get_melee() {
+            Some(melee) => melee,
+            None => return,
+        };
+
+        for (i, key) in NUMBER_KEYS.iter().enumerate() {
+            if is_key_pressed(*key) && i < self.melees.len() {
+                self.selected_melee = i;
+            }
+        }
+    }
 
     fn get_gun(&self) -> Option<Gun> {
-        if self.selected_gun >= self.guns.len() {
+        if self.guns.len() == 0 || self.selected_gun >= self.guns.len() {
             return None;
         }
         return Option::from(self.guns[self.selected_gun]);
     }
 
-    fn shoot(&mut self) {
-        match self.get_gun() {
-            Some(gun) => {
-                if self.last_shot == 0.0 || get_time() > self.last_shot + gun.fire_delay as f64 {
-                    GAME().camera.set_shake(gun.shake);
+    fn get_melee(&self) -> Option<Melee> {
+        if self.melees.len() == 0 || self.selected_melee >= self.melees.len() {
+            return None;
+        }
+        return Option::from(self.melees[self.selected_melee]);
+    }
 
-                    let angle = angle(self.rect.get_center(), rel_mouse_pos());
-                    GAME().objects.push(Objects::from(Bullet::new(
-                        angle,
-                        self.rect.get_center(),
-                        gun.bullet_config,
-                    )));
-                    self.last_shot = get_time();
-                }
-            }
-            None => {}
+    fn shoot(&mut self) {
+        let gun = match self.get_gun() {
+            Some(gun) => gun,
+            None => return,
+        };
+
+        if self.last_shot == 0.0 || get_time() > self.last_shot + gun.fire_delay as f64 {
+            GAME().camera.set_shake(gun.shake);
+
+            let angle = angle(self.rect.get_center(), rel_mouse_pos());
+            GAME().objects.push(Objects::from(Bullet::new(
+                angle,
+                self.rect.get_center(),
+                gun.bullet_config,
+            )));
+            self.last_shot = get_time();
         }
     }
 
