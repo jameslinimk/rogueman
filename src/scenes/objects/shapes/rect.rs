@@ -3,6 +3,8 @@ use macroquad::color::Color;
 use macroquad::math::Vec2;
 use macroquad::shapes::draw_rectangle;
 
+use super::line::Line;
+
 #[derive(Debug, Copy, Clone)]
 pub struct Rect {
     pub pos: Vec2,
@@ -78,6 +80,10 @@ impl Rect {
             && self.get_right() > rect.pos.x
             && self.pos.y < rect.get_bottom()
             && self.get_bottom() > rect.pos.y;
+    }
+
+    pub fn touches_line(&self, line: &mut Line) -> bool {
+        return line.touches_rect(self);
     }
 
     pub fn draw(&self, color: Color) {
