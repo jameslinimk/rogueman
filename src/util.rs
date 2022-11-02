@@ -9,6 +9,7 @@ use macroquad::{
 use crate::scenes::game::GAME;
 
 pub const NUMBER_KEYS: [KeyCode; 4] = [KeyCode::Key1, KeyCode::Key2, KeyCode::Key3, KeyCode::Key4];
+pub const DAMAGE_COOLDOWN: f64 = 0.25;
 
 /// It takes two points, and returns the angle between them
 pub fn angle(origin: Vec2, dest: Vec2) -> f32 {

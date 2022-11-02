@@ -7,7 +7,7 @@ use macroquad::{
 use crate::{
     game_remove,
     scenes::{
-        game::{self, GAME},
+        game::GAME,
         object::{obj_id, IDObject},
     },
     util::{deg_to_rad, project},
@@ -67,23 +67,27 @@ impl Bullet {
         if self.config.friendly {
             for enemy in &mut GAME().enemies {
                 if self.rect.touches_rect(&enemy.rect) {
-                    enemy.hit(self.config.damage);
+                    let success = enemy.hit(self.config.damage);
 
-                    self.traveled_through += 1;
-                    if self.traveled_through > self.config.pierce {
-                        game_remove!(GAME().objects, self.id);
-                        return;
+                    if success {
+                        self.traveled_through += 1;
+                        if self.traveled_through > self.config.pierce {
+                            game_remove!(GAME().objects, self.id);
+                            return;
+                        }
                     }
                 }
             }
         } else {
             if self.rect.touches_rect(&GAME().player.rect) {
-                GAME().player.hit(self.config.damage);
+                let success = GAME().player.hit(self.config.damage);
 
-                self.traveled_through += 1;
-                if self.traveled_through > self.config.pierce {
-                    game_remove!(GAME().objects, self.id);
-                    return;
+                if success {
+                    self.traveled_through += 1;
+                    if self.traveled_through > self.config.pierce {
+                        game_remove!(GAME().objects, self.id);
+                        return;
+                    }
                 }
             }
         }

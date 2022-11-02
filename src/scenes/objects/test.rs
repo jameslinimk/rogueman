@@ -1,15 +1,11 @@
-use macroquad::{
-    prelude::{mouse_position, vec2, PURPLE, RED, YELLOW},
-    shapes::draw_rectangle,
-    time::get_frame_time,
-};
+use macroquad::prelude::{RED, YELLOW};
 
 use crate::{
     scenes::{
         game::GAME,
         object::{obj_id, IDObject},
     },
-    util::{angle, project, rel_mouse_pos},
+    util::rel_mouse_pos,
 };
 
 use super::shapes::{line::Line, rect::Rect};

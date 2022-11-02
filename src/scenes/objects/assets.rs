@@ -1,4 +1,4 @@
-use std::{collections::HashMap, hash::Hash, sync::Mutex};
+use std::{collections::HashMap, sync::Mutex};
 
 use lazy_static::lazy_static;
 use macroquad::texture::{load_texture, Texture2D};

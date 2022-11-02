@@ -1,11 +1,8 @@
-use lazy_static::lazy_static;
-use macroquad::color::{BLACK, WHITE};
-use macroquad::prelude::{is_key_down, is_key_pressed, Color, KeyCode};
-use macroquad::rand::{gen_range, ChooseRandom};
-use macroquad::shapes::draw_poly;
+use macroquad::color::WHITE;
+use macroquad::rand::ChooseRandom;
 use macroquad::window::clear_background;
 
-use crate::camera::{Camera, ShakeConfig};
+use crate::camera::Camera;
 use crate::scenes::objects::player::Player;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::util::hex;
@@ -16,8 +13,7 @@ use super::objects::assets::load_image;
 use super::objects::enemies::enemy::Enemy;
 use super::objects::items::guns::GUNS;
 use super::objects::objects::Objects;
-use super::objects::test::TestObj;
-use super::rooms::{load_room, Objects as RoomObjects, ROOMS};
+use super::rooms::{load_room, ROOMS};
 
 pub_global_variable!(GAME, _GAME, GameScene);
 

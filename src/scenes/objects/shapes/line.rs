@@ -48,6 +48,7 @@ pub fn polygons_intersect(polygons: &[Vec<Vec2>; 2]) -> bool {
     return true;
 }
 
+#[derive(Debug)]
 pub struct Line {
     pub p1: Vec2,
     pub p2: Vec2,
@@ -56,22 +57,11 @@ pub struct Line {
 }
 impl Line {
     pub fn new(p1: Vec2, p2: Vec2, thickness: f32) -> Line {
-        let width = p2.x - p1.x;
-        let height = p2.y - p1.y;
-        let length = distance(p1, p2);
-        let xs = (thickness * height / length) / 2.0;
-        let ys = (thickness * width / length) / 2.0;
-
         Line {
             p1,
             p2,
             thickness,
-            _points: vec![
-                vec2(p1.x - xs, p1.y - ys),
-                vec2(p1.x + xs, p1.y + ys),
-                vec2(p2.x + xs, p2.y - ys),
-                vec2(p2.x - xs, p2.y - ys),
-            ],
+            _points: vec![],
         }
     }
 

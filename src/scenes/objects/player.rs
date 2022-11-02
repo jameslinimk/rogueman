@@ -1,23 +1,24 @@
 use crate::scenes::objects::shapes::line::Line;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::util::{
-    angle, multiline_text, project, rel_mouse_pos, rx_smooth, ry_smooth, NUMBER_KEYS,
+    angle, multiline_text, project, rel_mouse_pos, rx_smooth, ry_smooth, DAMAGE_COOLDOWN,
+    NUMBER_KEYS,
 };
 use crate::{KeyCode, GAME};
-use macroquad::color::{BLUE, WHITE};
+use macroquad::color::WHITE;
 use macroquad::input::is_key_down;
 use macroquad::prelude::{
-    is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, Color, MouseButton, RED,
+    is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, Color, MouseButton, YELLOW,
 };
-use macroquad::shapes::{draw_line, draw_rectangle};
+use macroquad::shapes::draw_rectangle;
 
-use macroquad::text::draw_text;
 use macroquad::texture::draw_texture;
 use macroquad::time::{get_frame_time, get_time};
-use macroquad::window::{screen_height, screen_width};
+use macroquad::window::screen_height;
 
 use super::assets::get_image;
 use super::bullet::Bullet;
+
 use super::items::guns::{Gun, GUNS};
 use super::items::melee::{Melee, MELEES};
 use super::objects::Objects;
@@ -26,14 +27,19 @@ use super::objects::Objects;
 pub struct Player {
     pub rect: Rect,
     speed: f32,
-    last_shot: f64,
-    last_melee: f64,
     max_health: f32,
     health: f32,
+    last_damage: f64,
+
     guns: Vec<Gun>,
     selected_gun: usize,
+    last_shot: f64,
+
     melees: Vec<Melee>,
     selected_melee: usize,
+    last_melee: f64,
+    last_melee_angle: Option<f32>,
+    last_melee_line: Option<Line>,
 }
 impl Player {
     pub fn new() -> Player {
@@ -42,6 +48,7 @@ impl Player {
             speed: 500.0,
             max_health: 100.0,
             health: 100.0,
+            last_damage: 0.0,
 
             guns: GUNS.to_vec(),
             selected_gun: 0,
@@ -50,6 +57,8 @@ impl Player {
             melees: MELEES.to_vec(),
             selected_melee: 0,
             last_melee: 0.0,
+            last_melee_angle: None,
+            last_melee_line: None,
         }
     }
 
@@ -151,33 +160,68 @@ impl Player {
             }
         }
 
-        let mut swinging = true;
-        let mut on_cooldown = true;
+        let (mut swinging, on_cooldown) = self.melee_info(melee);
 
-        if self.last_melee == 0.0 {
-            swinging = false;
-            on_cooldown = false;
-        } else if get_time() > self.last_melee + melee.delay as f64 + melee.duration as f64 {
-            swinging = false;
-            on_cooldown = false;
-        } else if get_time() > self.last_melee + melee.delay as f64 {
+        /* ----------------------------- Start of swing ----------------------------- */
+        if !on_cooldown && is_mouse_button_pressed(MouseButton::Left) {
+            self.last_melee_angle = Option::from(angle(self.rect.get_center(), rel_mouse_pos()));
+            self.last_melee_line = Option::from(Line::new(
+                self.rect.get_center(),
+                project(
+                    self.rect.get_center(),
+                    self.last_melee_angle.unwrap(),
+                    melee.range,
+                ),
+                melee.range_width,
+            ));
+
+            self.last_melee = get_time();
             swinging = true;
-            on_cooldown = true;
         }
 
-        println!("swinging/on_cooldown: {}/{}", swinging, on_cooldown);
+        /* -------------------------------- Swinging -------------------------------- */
+        if swinging {
+            // Calculating line
+            let line = self.last_melee_line.as_mut().unwrap();
+            line.p1 = self.rect.get_center();
+            line.p2 = project(
+                self.rect.get_center(),
+                self.last_melee_angle.unwrap(),
+                melee.range,
+            );
 
-        if self.last_melee == 0.0 || get_time() > self.last_melee + melee.delay as f64 {
-            if is_mouse_button_pressed(MouseButton::Left) {
-                let angle = angle(self.rect.get_center(), rel_mouse_pos());
-                let mut swing_line = Line::new(
-                    self.rect.get_center(),
-                    project(self.rect.get_center(), angle, melee.range),
-                    melee.range_width,
-                );
-
-                self.last_melee = get_time();
+            // Hitting enemies
+            for enemy in &mut GAME().enemies {
+                if line.touches_rect(&enemy.rect) {
+                    enemy.hit(melee.damage);
+                }
             }
+        }
+    }
+
+    fn draw_melee(&mut self) {
+        let melee = match self.get_melee() {
+            Some(melee) => melee,
+            None => return,
+        };
+
+        let (swinging, _) = self.melee_info(melee);
+        if swinging {
+            self.last_melee_line.as_ref().unwrap().draw(YELLOW);
+        }
+    }
+
+    /// Returns `(swinging, on_cooldown)`
+    fn melee_info(&mut self, melee: Melee) -> (bool, bool) {
+        if self.last_melee == 0.0
+            || get_time() > self.last_melee + melee.delay as f64 + melee.swing_duration as f64
+        {
+            (false, false)
+        } else {
+            (
+                get_time() <= self.last_melee + melee.swing_duration as f64,
+                true,
+            )
         }
     }
 
@@ -286,13 +330,20 @@ impl Player {
         //     BLUE,
         // );
 
+        self.draw_melee();
         self.draw_ui();
     }
 
-    pub fn hit(&mut self, damage: f32) {
+    pub fn hit(&mut self, damage: f32) -> bool {
+        if get_time() <= self.last_damage + DAMAGE_COOLDOWN {
+            return false;
+        }
+
+        self.last_damage = get_time();
         self.health -= damage;
         if self.health < 0.0 {
             println!("Player died");
         }
+        return true;
     }
 }

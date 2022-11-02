@@ -8,7 +8,7 @@ pub struct Melee {
     pub range: f32,
     pub range_width: f32,
     pub delay: f32,
-    pub duration: f32,
+    pub swing_duration: f32,
     pub rarity: Rarities,
 }
 
@@ -19,7 +19,7 @@ const POCKET_KNIFE: Melee = Melee {
     range: 25.0,
     range_width: 10.0,
     delay: 0.5,
-    duration: 1.0,
+    swing_duration: 1.0,
     rarity: Rarities::COMMON,
 };
 
@@ -30,7 +30,7 @@ const POCKET_KNIFE_2: Melee = Melee {
     range: 25.0,
     range_width: 10.0,
     delay: 1.0,
-    duration: 1.0,
+    swing_duration: 1.0,
     rarity: Rarities::COMMON,
 };
 
