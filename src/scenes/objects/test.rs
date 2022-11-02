@@ -1,5 +1,5 @@
 use macroquad::{
-    prelude::{mouse_position, RED, YELLOW},
+    prelude::{mouse_position, vec2, PURPLE, RED, YELLOW},
     shapes::draw_rectangle,
     time::get_frame_time,
 };
@@ -22,7 +22,7 @@ pub struct TestObj {
 impl TestObj {
     pub fn new() -> TestObj {
         return TestObj {
-            rect: Rect::new_center(100.0, 100.0, 150.0, 150.0),
+            rect: Rect::new_center(-500.0, 100.0, 150.0, 150.0),
             speed: 150.0,
             id: obj_id(),
         };
@@ -32,12 +32,14 @@ impl IDObject for TestObj {
     fn update(&mut self) {}
 
     fn draw(&mut self) {
-        self.rect.draw(YELLOW);
-        let test = Line::new(GAME().player.rect.get_center(), rel_mouse_pos(), 10.0);
-        for p in &test.points {
-            draw_rectangle(p.x, p.y, 5.0, 5.0, RED);
-        }
+        let mut test = Line::new(GAME().player.rect.get_center(), rel_mouse_pos(), 10.0);
         test.draw(RED);
+
+        if test.touches_rect(&self.rect) {
+            self.rect.draw(RED);
+        } else {
+            self.rect.draw(YELLOW);
+        }
     }
 
     fn get_id(&self) -> u32 {

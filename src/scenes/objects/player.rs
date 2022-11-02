@@ -1,13 +1,17 @@
+use crate::scenes::objects::shapes::line::Line;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::{angle, multiline_text, rel_mouse_pos, rx_smooth, ry_smooth, NUMBER_KEYS};
+use crate::util::{
+    angle, multiline_text, project, rel_mouse_pos, rx_smooth, ry_smooth, NUMBER_KEYS,
+};
 use crate::{KeyCode, GAME};
 use macroquad::color::{BLUE, WHITE};
 use macroquad::input::is_key_down;
 use macroquad::prelude::{
-    is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, Color, MouseButton,
+    is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, Color, MouseButton, RED,
 };
 use macroquad::shapes::{draw_line, draw_rectangle};
 
+use macroquad::text::draw_text;
 use macroquad::texture::draw_texture;
 use macroquad::time::{get_frame_time, get_time};
 use macroquad::window::{screen_height, screen_width};
@@ -36,14 +40,16 @@ impl Player {
         Player {
             rect: Rect::new_center(-100.0, -100.0, 30.0, 30.0),
             speed: 500.0,
-            last_shot: 0.0,
-            last_melee: 0.0,
             max_health: 100.0,
             health: 100.0,
+
             guns: GUNS.to_vec(),
             selected_gun: 0,
+            last_shot: 0.0,
+
             melees: MELEES.to_vec(),
             selected_melee: 0,
+            last_melee: 0.0,
         }
     }
 
@@ -145,9 +151,32 @@ impl Player {
             }
         }
 
+        let mut swinging = true;
+        let mut on_cooldown = true;
+
+        if self.last_melee == 0.0 {
+            swinging = false;
+            on_cooldown = false;
+        } else if get_time() > self.last_melee + melee.delay as f64 + melee.duration as f64 {
+            swinging = false;
+            on_cooldown = false;
+        } else if get_time() > self.last_melee + melee.delay as f64 {
+            swinging = true;
+            on_cooldown = true;
+        }
+
+        println!("swinging/on_cooldown: {}/{}", swinging, on_cooldown);
+
         if self.last_melee == 0.0 || get_time() > self.last_melee + melee.delay as f64 {
             if is_mouse_button_pressed(MouseButton::Left) {
-                println!("Swing")
+                let angle = angle(self.rect.get_center(), rel_mouse_pos());
+                let mut swing_line = Line::new(
+                    self.rect.get_center(),
+                    project(self.rect.get_center(), angle, melee.range),
+                    melee.range_width,
+                );
+
+                self.last_melee = get_time();
             }
         }
     }
@@ -188,16 +217,22 @@ impl Player {
     fn draw_ui(&self) {
         /* ------------------------------- Debug Menu ------------------------------- */
         let gun = self.get_gun();
+        let melee = self.get_melee();
         multiline_text(
             &format!(
-                "X,Y: {}, {}\nGun: {}",
+                "X,Y: {}, {}\nGun: {}\nMelee: {}",
                 self.rect.get_center().x.round(),
                 self.rect.get_center().y.round(),
                 if gun.is_none() {
                     "None"
                 } else {
                     &gun.unwrap().name
-                }
+                },
+                if melee.is_none() {
+                    "None"
+                } else {
+                    &melee.unwrap().name
+                },
             ),
             rx_smooth(0.0),
             ry_smooth(27.0),

@@ -17,7 +17,7 @@ use super::objects::enemies::enemy::Enemy;
 use super::objects::items::guns::GUNS;
 use super::objects::objects::Objects;
 use super::objects::test::TestObj;
-use super::rooms::{Objects as RoomObjects, ROOMS};
+use super::rooms::{load_room, Objects as RoomObjects, ROOMS};
 
 pub_global_variable!(GAME, _GAME, GameScene);
 
@@ -30,26 +30,14 @@ pub struct GameScene {
 }
 impl GameScene {
     pub fn new() -> GameScene {
-        let mut walls: Vec<Rect> = vec![];
-
         let rooms = ROOMS.lock().unwrap();
         let rand_room = rooms.choose().unwrap();
 
-        for (y, line) in rand_room.iter().enumerate() {
-            for (x, obj) in line.iter().enumerate() {
-                match obj {
-                    RoomObjects::AIR => {}
-                    RoomObjects::WALL => {
-                        walls.push(Rect::new(x as f32 * 30.0, y as f32 * 30.0, 30.0, 30.0));
-                    }
-                }
-            }
-        }
-
         GameScene {
             player: Player::new(),
-            objects: vec![Objects::from(TestObj::new())],
-            walls,
+            // objects: vec![Objects::from(TestObj::new())],
+            objects: vec![],
+            walls: load_room(rand_room),
             enemies: vec![Enemy::new(200.0, 200.0, 10.0)],
             camera: Camera::new(),
         }

@@ -4,11 +4,12 @@ use super::items::Rarities;
 pub struct Melee {
     pub name: &'static str,
     pub image_file: &'static str,
-    damage: f32,
-    range: f32,
-    range_width: f32,
+    pub damage: f32,
+    pub range: f32,
+    pub range_width: f32,
     pub delay: f32,
-    rarity: Rarities,
+    pub duration: f32,
+    pub rarity: Rarities,
 }
 
 const POCKET_KNIFE: Melee = Melee {
@@ -17,8 +18,20 @@ const POCKET_KNIFE: Melee = Melee {
     damage: 25.0,
     range: 25.0,
     range_width: 10.0,
-    delay: 1.0,
+    delay: 0.5,
+    duration: 1.0,
     rarity: Rarities::COMMON,
 };
 
-pub const MELEES: [Melee; 1] = [POCKET_KNIFE];
+const POCKET_KNIFE_2: Melee = Melee {
+    name: "Pocket Knife 2",
+    image_file: "./assets/melees/pocket_knife.png",
+    damage: 25.0,
+    range: 25.0,
+    range_width: 10.0,
+    delay: 1.0,
+    duration: 1.0,
+    rarity: Rarities::COMMON,
+};
+
+pub const MELEES: [Melee; 2] = [POCKET_KNIFE, POCKET_KNIFE_2];
