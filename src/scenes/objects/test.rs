@@ -22,10 +22,7 @@ impl IDObject for TestObj {
     fn update(&mut self) {}
 
     fn draw(&mut self) {
-        let mut test = Line::new(GAME().player.rect.get_center(), rel_mouse_pos(), 10.0);
-        test.draw(RED);
-
-        if test.touches_rect(&self.rect) {
+        if self.rect.touches_point(&rel_mouse_pos()) {
             self.rect.draw(RED);
         } else {
             self.rect.draw(YELLOW);

@@ -4,7 +4,8 @@ use super::objects::enemies::enemy::Enemy;
 use super::objects::items::guns::GUNS;
 use super::objects::objects::Objects;
 use super::objects::player::player::Player;
-use super::rooms::{load_room, ROOMS};
+use super::objects::test::TestObj;
+use super::rooms::{load_room, Objects as RoomObjects, ROOMS};
 use crate::camera::Camera;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::util::hex;
@@ -17,6 +18,7 @@ pub struct GameScene {
     pub player: Player,
     pub objects: Vec<Objects>,
     pub walls: Vec<Rect>,
+    pub room: Vec<Vec<RoomObjects>>,
     pub enemies: Vec<Enemy>,
     pub camera: Camera,
 }
@@ -27,8 +29,9 @@ impl GameScene {
 
         GameScene {
             player: Player::new(),
-            // objects: vec![Objects::from(TestObj::new())],
-            objects: vec![],
+            objects: vec![Objects::from(TestObj::new())],
+            // objects: vec![],
+            room: rand_room.to_vec(),
             walls: load_room(rand_room),
             enemies: vec![Enemy::new(200.0, 200.0, 10.0)],
             camera: Camera::new(),

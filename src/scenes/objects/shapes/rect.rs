@@ -82,6 +82,13 @@ impl Rect {
         return line.touches_rect(self);
     }
 
+    pub fn touches_point(&self, point: &Vec2) -> bool {
+        return !(point.x > self.get_right()
+            || point.x < self.get_left()
+            || point.y > self.get_bottom()
+            || point.y < self.get_top());
+    }
+
     pub fn draw(&self, color: Color) {
         draw_rectangle(self.pos.x, self.pos.y, self.width, self.height, color);
     }
