@@ -26,6 +26,6 @@
 			"ql"
 		],
 		"description": "Quickly log a variable and its name",
-		"body": "println!(\"$1: {}\", $1);"
+		"body": "println!(\"$1: {:?}\", $1);"
 	}
 }

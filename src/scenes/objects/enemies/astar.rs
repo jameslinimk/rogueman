@@ -9,6 +9,8 @@ fn manhattan_heuristic(pos: &HashVec2, goal: &HashVec2) -> i32 {
     return -(x_dis + y_dis);
 }
 
+// TODO EUCLIEDIAN
+
 fn pos_valid(pos: &HashVec2, rooms: &Vec<Vec<Objects>>) -> bool {
     if pos.y as usize >= rooms.len() || pos.x as usize >= rooms[pos.y as usize].len() {
         return false;
@@ -39,13 +41,6 @@ impl HashVec2 {
 
     pub fn directions(&self, rooms: &Vec<Vec<Objects>>) -> Vec<HashVec2> {
         let mut vec = vec![];
-
-        let mut add_if_valid = |pos: HashVec2| {
-            if pos_valid(&pos, rooms) {
-                vec.push(pos);
-            }
-        };
-
         for pos in [
             HashVec2::new(self.x + 1, self.y),
             HashVec2::new(self.x - 1, self.y),
@@ -61,18 +56,18 @@ impl HashVec2 {
     }
 }
 
-pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) {
+pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Option<Vec<HashVec2>> {
     let mut parents = hashmap! {};
 
     let mut pq = PriorityQueue::<HashVec2, i32>::new();
     pq.push(start, 0);
 
+    #[allow(unused_assignments)]
     let mut parent = HashVec2::new(0, 0);
     loop {
         let p = pq.pop();
         if p.is_none() {
-            // return None;
-            return;
+            return None;
         }
         parent = p.unwrap().0;
 
@@ -82,38 +77,35 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) {
 
         for child in &parent.directions(rooms) {
             pq.push(*child, manhattan_heuristic(child, &goal));
-            parents.insert(parent, *child);
+            if !parents.contains_key(child) {
+                parents.insert(*child, parent);
+            }
         }
     }
 
-    // TODO TEST
-
-    let mut path = vec![];
+    let mut path = vec![goal];
     loop {
         let grandpa = parents.get(&parent);
-        if grandpa.is_none() {
+        if grandpa.is_none() || grandpa.unwrap() == &start {
             break;
         }
-        path.push(grandpa.unwrap());
+        path.insert(0, *grandpa.unwrap());
+        parent = *grandpa.unwrap();
     }
 
-    println!("path: {:?}", path);
-}
-
-fn print_rooms(rooms: &Vec<Vec<Objects>>) {
-    for row in rooms {
-        for cell in row {
-            print!("{:?} ", cell);
-        }
-        println!();
-    }
+    Option::from(path)
 }
 
 #[test]
 fn test() {
-    let rooms = vec![vec![Objects::AIR; 8]; 8];
-    let goal = HashVec2::new(5, 5);
-    let p = HashVec2::new(1, 0);
+    let rooms = vec![
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+    ];
+    let goal = HashVec2::new(3, 3);
+    let p = HashVec2::new(0, 0);
 
-    astar(p, goal, &rooms);
+    println!("{:?}", astar(p, goal, &rooms));
 }
