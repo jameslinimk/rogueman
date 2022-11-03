@@ -1,3 +1,4 @@
+use derive_new::new;
 use macroquad::camera::{set_camera, Camera2D};
 use macroquad::math::{vec2, Vec2};
 use macroquad::prelude::{screen_height, screen_width};
@@ -12,28 +13,24 @@ pub struct ShakeConfig {
     pub intensity: f32,
 }
 
+#[derive(new)]
 pub struct Camera {
+    #[new(value = "Camera2D {
+        zoom: vec2(1.0 / screen_width() * 2.0, -1.0 / screen_height() * 2.0),
+        target: vec2(screen_width() / 2.0, screen_height() / 2.0),
+        ..Default::default()
+    }")]
     pub camera: Camera2D,
+    #[new(value = "vec2(screen_width() / 2.0, screen_height() / 2.0)")]
     pub target: Vec2,
+    #[new(value = "None")]
     pub shake: Option<ShakeConfig>,
+    #[new(value = "vec2(0.0, 0.0)")]
     pub shake_offset: Vec2,
+    #[new(value = "0.0")]
     pub shake_start: f64,
 }
 impl Camera {
-    pub fn new() -> Camera {
-        Camera {
-            camera: Camera2D {
-                zoom: vec2(1.0 / screen_width() * 2.0, -1.0 / screen_height() * 2.0),
-                target: vec2(screen_width() / 2.0, screen_height() / 2.0),
-                ..Default::default()
-            },
-            target: vec2(screen_width() / 2.0, screen_height() / 2.0),
-            shake: None,
-            shake_offset: vec2(0.0, 0.0),
-            shake_start: 0.0,
-        }
-    }
-
     pub fn update_camera(&mut self) {
         set_camera(&self.camera);
     }

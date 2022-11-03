@@ -24,7 +24,7 @@ impl Enemy {
             speed: 100.0,
             max_health,
             health: max_health,
-            last_damage: 0.0,
+            last_damage: f64::MIN,
             id: obj_id(),
         }
     }

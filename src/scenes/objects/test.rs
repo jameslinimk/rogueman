@@ -1,3 +1,4 @@
+use derive_new::new;
 use macroquad::prelude::{RED, YELLOW};
 
 use crate::{
@@ -10,19 +11,12 @@ use crate::{
 
 use super::shapes::{line::Line, rect::Rect};
 
+#[derive(new)]
 pub struct TestObj {
+    #[new(value = "Rect::new_center(-500.0, 100.0, 150.0, 150.0)")]
     rect: Rect,
-    speed: f32,
+    #[new(value = "obj_id()")]
     id: u32,
-}
-impl TestObj {
-    pub fn new() -> TestObj {
-        return TestObj {
-            rect: Rect::new_center(-500.0, 100.0, 150.0, 150.0),
-            speed: 150.0,
-            id: obj_id(),
-        };
-    }
 }
 impl IDObject for TestObj {
     fn update(&mut self) {}
