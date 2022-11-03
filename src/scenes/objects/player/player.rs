@@ -6,12 +6,7 @@ use crate::scenes::objects::shapes::rect::Rect;
 use crate::util::{multiline_text, rx_smooth, ry_smooth, DAMAGE_COOLDOWN};
 use crate::GAME;
 use derive_new::new;
-use macroquad::color::WHITE;
-use macroquad::prelude::Color;
-use macroquad::shapes::draw_rectangle;
-use macroquad::texture::draw_texture;
-use macroquad::time::get_time;
-use macroquad::window::screen_height;
+use macroquad::prelude::{draw_rectangle, draw_texture, get_time, screen_height, Color, WHITE};
 
 #[derive(Debug, new)]
 pub struct Player {

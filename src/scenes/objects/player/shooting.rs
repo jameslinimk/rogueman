@@ -5,12 +5,9 @@ use crate::scenes::objects::items::guns::Gun;
 use crate::scenes::objects::objects::Objects;
 use crate::util::angle;
 use crate::util::rel_mouse_pos;
-use crate::KeyCode;
-use macroquad::prelude::is_key_pressed;
-use macroquad::prelude::is_mouse_button_down;
-use macroquad::prelude::is_mouse_button_pressed;
-use macroquad::prelude::MouseButton;
-use macroquad::time::get_time;
+use macroquad::prelude::{
+    get_time, is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, KeyCode, MouseButton,
+};
 
 impl Player {
     pub fn update_shoot(&mut self) {

@@ -1,8 +1,7 @@
-use std::{collections::HashMap, sync::Mutex};
-
 use lazy_static::lazy_static;
 use macroquad::prelude::load_string;
 use maplit::hashmap;
+use std::{collections::HashMap, sync::Mutex};
 
 use super::objects::shapes::rect::Rect;
 

@@ -1,12 +1,3 @@
-use macroquad::color::WHITE;
-use macroquad::rand::ChooseRandom;
-use macroquad::window::clear_background;
-
-use crate::camera::Camera;
-use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::hex;
-use crate::{pub_global_variable, repeat_for_vec, repeat_function, Object};
-
 use super::object::IDObject;
 use super::objects::assets::load_image;
 use super::objects::enemies::enemy::Enemy;
@@ -14,6 +5,11 @@ use super::objects::items::guns::GUNS;
 use super::objects::objects::Objects;
 use super::objects::player::player::Player;
 use super::rooms::{load_room, ROOMS};
+use crate::camera::Camera;
+use crate::scenes::objects::shapes::rect::Rect;
+use crate::util::hex;
+use crate::{pub_global_variable, repeat_for_vec, repeat_function, Object};
+use macroquad::prelude::{clear_background, rand::ChooseRandom, WHITE};
 
 pub_global_variable!(GAME, _GAME, GameScene);
 

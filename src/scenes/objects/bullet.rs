@@ -1,8 +1,4 @@
-use macroquad::{
-    prelude::{Vec2, YELLOW},
-    rand::gen_range,
-    time::{get_frame_time, get_time},
-};
+use macroquad::prelude::{get_frame_time, get_time, rand::gen_range, Vec2, YELLOW};
 
 use crate::{
     game_remove,

@@ -1,9 +1,8 @@
 use std::f32::consts::PI;
 
-use macroquad::{
-    prelude::{mouse_position, vec2, Color, KeyCode, Vec2},
-    text::{draw_text, draw_text_ex, measure_text, TextParams},
-    window::{screen_height, screen_width},
+use macroquad::prelude::{
+    draw_text, draw_text_ex, measure_text, mouse_position, screen_height, screen_width, vec2,
+    Color, KeyCode, TextParams, Vec2,
 };
 
 use crate::scenes::game::GAME;

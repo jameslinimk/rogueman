@@ -1,11 +1,9 @@
-use derive_new::new;
-use macroquad::camera::{set_camera, Camera2D};
-use macroquad::math::{vec2, Vec2};
-use macroquad::prelude::{screen_height, screen_width};
-use macroquad::rand::gen_range;
-use macroquad::time::{get_frame_time, get_time};
-
 use crate::util::{angle, distance, ease_in_out, project};
+use derive_new::new;
+use macroquad::prelude::{
+    get_frame_time, get_time, rand::gen_range, screen_height, screen_width, set_camera, vec2,
+    Camera2D, Vec2,
+};
 
 #[derive(Debug, Clone, Copy)]
 pub struct ShakeConfig {

@@ -3,10 +3,8 @@ use std::collections::HashMap;
 use super::player::Player;
 use crate::scenes::game::GAME;
 use crate::util::project;
-use crate::KeyCode;
 use lazy_static::lazy_static;
-use macroquad::prelude::{is_key_down, is_key_pressed, vec2};
-use macroquad::time::{get_frame_time, get_time};
+use macroquad::prelude::{get_frame_time, get_time, is_key_down, is_key_pressed, vec2, KeyCode};
 use maplit::hashmap;
 use std::f32::consts::PI;
 

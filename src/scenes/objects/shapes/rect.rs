@@ -1,9 +1,5 @@
-use crate::vec2;
-use macroquad::color::Color;
-use macroquad::math::Vec2;
-use macroquad::shapes::draw_rectangle;
-
 use super::line::Line;
+use macroquad::prelude::{draw_rectangle, vec2, Color, Vec2};
 
 #[derive(Debug, Copy, Clone)]
 pub struct Rect {

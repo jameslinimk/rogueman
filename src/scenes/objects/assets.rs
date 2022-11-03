@@ -1,8 +1,7 @@
-use std::{collections::HashMap, sync::Mutex};
-
 use lazy_static::lazy_static;
 use macroquad::texture::{load_texture, Texture2D};
 use maplit::hashmap;
+use std::{collections::HashMap, sync::Mutex};
 
 lazy_static! {
     static ref ASSET_MAP: Mutex<HashMap<&'static str, Texture2D>> = Mutex::new(hashmap!());

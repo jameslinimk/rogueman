@@ -6,11 +6,7 @@ use crate::util::project;
 use crate::util::rel_mouse_pos;
 use crate::util::NUMBER_KEYS;
 use crate::GAME;
-use macroquad::prelude::is_key_pressed;
-use macroquad::prelude::is_mouse_button_pressed;
-use macroquad::prelude::MouseButton;
-use macroquad::prelude::YELLOW;
-use macroquad::time::get_time;
+use macroquad::prelude::{get_time, is_key_pressed, is_mouse_button_pressed, MouseButton, YELLOW};
 
 impl Player {
     pub fn update_melee(&mut self) {
