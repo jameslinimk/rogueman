@@ -1,15 +1,14 @@
-use crate::scenes::{objects::shapes::rect::Rect, rooms::Objects};
-use macroquad::prelude::{vec2, Vec2};
+use crate::scenes::rooms::Objects;
+use derive_new::new;
+use macroquad::prelude::Vec2;
 use maplit::hashmap;
 use priority_queue::PriorityQueue;
 
 fn manhattan_heuristic(pos: &HashVec2, goal: &HashVec2) -> i32 {
-    let x_dis = (pos.x - goal.x).abs();
-    let y_dis = (pos.y - goal.y).abs();
+    let x_dis = pos.x.abs_diff(goal.x) as i32;
+    let y_dis = pos.y.abs_diff(goal.y) as i32;
     return -(x_dis + y_dis);
 }
-
-// TODO EUCLIEDIAN
 
 fn pos_valid(pos: &HashVec2, rooms: &Vec<Vec<Objects>>) -> bool {
     if pos.y as usize >= rooms.len() || pos.x as usize >= rooms[pos.y as usize].len() {
@@ -22,16 +21,12 @@ fn pos_valid(pos: &HashVec2, rooms: &Vec<Vec<Objects>>) -> bool {
     }
 }
 
-#[derive(Hash, PartialEq, PartialOrd, Eq, Ord, Debug, Clone, Copy)]
+#[derive(Hash, PartialEq, PartialOrd, Eq, Ord, Debug, Clone, Copy, new)]
 pub struct HashVec2 {
     x: i32,
     y: i32,
 }
 impl HashVec2 {
-    pub fn new(x: i32, y: i32) -> HashVec2 {
-        HashVec2 { x, y }
-    }
-
     pub fn from_vec2(vec2: Vec2) -> HashVec2 {
         HashVec2 {
             x: vec2.x as i32,
@@ -46,6 +41,10 @@ impl HashVec2 {
             HashVec2::new(self.x - 1, self.y),
             HashVec2::new(self.x, self.y + 1),
             HashVec2::new(self.x, self.y - 1),
+            HashVec2::new(self.x + 1, self.y + 1),
+            HashVec2::new(self.x - 1, self.y + 1),
+            HashVec2::new(self.x + 1, self.y - 1),
+            HashVec2::new(self.x - 1, self.y - 1),
         ] {
             if pos_valid(&pos, rooms) {
                 vec.push(pos);
@@ -57,6 +56,10 @@ impl HashVec2 {
 }
 
 pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Option<Vec<HashVec2>> {
+    if !pos_valid(&start, &rooms) || !pos_valid(&goal, &rooms) {
+        return None;
+    }
+
     let mut parents = hashmap! {};
 
     let mut pq = PriorityQueue::<HashVec2, i32>::new();
@@ -76,7 +79,8 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
         }
 
         for child in &parent.directions(rooms) {
-            pq.push(*child, manhattan_heuristic(child, &goal));
+            let value = manhattan_heuristic(child, &goal);
+            pq.push(*child, value);
             if !parents.contains_key(child) {
                 parents.insert(*child, parent);
             }
@@ -94,18 +98,4 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
     }
 
     Option::from(path)
-}
-
-#[test]
-fn test() {
-    let rooms = vec![
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
-    ];
-    let goal = HashVec2::new(3, 3);
-    let p = HashVec2::new(0, 0);
-
-    println!("{:?}", astar(p, goal, &rooms));
 }

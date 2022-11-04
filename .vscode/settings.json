@@ -4,6 +4,7 @@
 		"consts",
 		"cooldown",
 		"hspd",
+		"maplit",
 		"powf",
 		"rustfmt",
 		"vspd"

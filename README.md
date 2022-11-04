@@ -1,3 +1,3 @@
-# Rust game
+# Rust game (WIP)
 
-Just a side project to learn more about rust and other stuff
+2D topdown roguelike game. Go through random rooms, getting upgrades when you finish a room.
