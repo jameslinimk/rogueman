@@ -66,7 +66,6 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
     let mut pq = PriorityQueue::<HashVec2, i32>::new();
     pq.push(start, 0);
 
-    #[allow(unused_assignments)]
     let mut parent = HashVec2::new(0, 0);
     while let Some(p) = pq.pop() {
         parent = p.0;
