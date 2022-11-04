@@ -1,9 +1,6 @@
 use derive_new::new;
 use lazy_static::lazy_static;
-use macroquad::{
-    prelude::load_string,
-    rand::{gen_range, srand},
-};
+use macroquad::prelude::{load_string, rand::gen_range, rand::srand};
 use maplit::hashmap;
 use std::{
     collections::{HashMap, VecDeque},
@@ -76,12 +73,12 @@ fn print_room(rooms: &Vec<Vec<Objects>>) {
     }
 }
 
-#[derive(Debug)]
+#[derive(Clone, Copy, Debug)]
 enum Direction {
     VERTICAL,
     HORIZONTAL,
 }
-#[derive(Debug, new)]
+#[derive(Clone, Copy, Debug, new)]
 struct SplitQueue {
     /// In which direction to split (or draw the line)
     direction: Direction,
@@ -90,23 +87,30 @@ struct SplitQueue {
     y_limits: (usize, usize),
 }
 
+fn pop_random(raw: &mut Vec<SplitQueue>) -> SplitQueue {
+    let i = gen_range(0, raw.len());
+    let copy = raw[i];
+    raw.remove(i);
+    copy
+}
+
 #[test]
 fn generate_room() {
     let size = 100;
-    let min_room_size = size / 5;
+    let min_room_size = size / 10;
 
-    srand(435243232345234);
+    srand(92935834993);
 
     let mut room = vec![vec![Objects::AIR; size as usize]; size as usize];
 
-    let mut queue = VecDeque::from([SplitQueue::new(
+    let mut queue = vec![SplitQueue::new(
         Direction::VERTICAL,
         (0, size - 1),
         (0, size - 1),
-    )]);
+    )];
 
     let mut i = 0;
-    while let Some(split) = queue.pop_front() {
+    while let split = pop_random(&mut queue) {
         // if i > 4 {
         //     break;
         // }
@@ -142,18 +146,17 @@ fn generate_room() {
         /* -------------------------- Calculating children -------------------------- */
         let new_ma_l = minor_limit;
 
-        // FIXME Debug this
         println!(" - Creating children");
         for new_mi_l in [
             (major_limit.0, rand_split - 1),
             (rand_split + 1, major_limit.1),
         ] {
             println!("   - new_mi_l: {:?}", new_mi_l);
-            queue.push_back(match split.direction {
+            queue.push(match split.direction {
                 Direction::VERTICAL => SplitQueue::new(Direction::HORIZONTAL, new_mi_l, new_ma_l),
                 Direction::HORIZONTAL => SplitQueue::new(Direction::VERTICAL, new_ma_l, new_mi_l),
             });
-            println!("   - queue: {:?}", queue.back());
+            println!("   - queue: {:?}", queue.last());
         }
     }
 
