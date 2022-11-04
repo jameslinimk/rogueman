@@ -5,7 +5,11 @@ use macroquad::{
     rand::{gen_range, srand},
 };
 use maplit::hashmap;
-use std::{collections::HashMap, sync::Mutex, time::SystemTime};
+use std::{
+    collections::{HashMap, VecDeque},
+    sync::Mutex,
+    time::SystemTime,
+};
 
 use super::objects::shapes::rect::Rect;
 
@@ -72,11 +76,12 @@ fn print_room(rooms: &Vec<Vec<Objects>>) {
     }
 }
 
+#[derive(Debug)]
 enum Direction {
     VERTICAL,
     HORIZONTAL,
 }
-#[derive(new)]
+#[derive(Debug, new)]
 struct SplitQueue {
     /// In which direction to split (or draw the line)
     direction: Direction,
@@ -88,23 +93,25 @@ struct SplitQueue {
 #[test]
 fn generate_room() {
     let size = 100;
-    let min_room_size = size / 10;
+    let min_room_size = size / 5;
 
-    srand(1253563463456);
+    srand(435243232345234);
 
     let mut room = vec![vec![Objects::AIR; size as usize]; size as usize];
 
-    let mut queue = vec![SplitQueue::new(
+    let mut queue = VecDeque::from([SplitQueue::new(
         Direction::VERTICAL,
         (0, size - 1),
         (0, size - 1),
-    )];
-    loop {
-        let s = queue.pop();
-        if s.is_none() {
-            break;
-        }
-        let split = s.unwrap();
+    )]);
+
+    let mut i = 0;
+    while let Some(split) = queue.pop_front() {
+        // if i > 4 {
+        //     break;
+        // }
+
+        println!("split: {:?}", split);
 
         let (major_limit, minor_limit) = match split.direction {
             Direction::VERTICAL => (split.x_limits, split.y_limits),
@@ -117,6 +124,9 @@ fn generate_room() {
 
         /* ---------------------------- Splitting parent ---------------------------- */
         let rand_split = gen_range(major_limit.0 + min_room_size, major_limit.1 - min_room_size);
+
+        println!(" - rand_split: {:?}", rand_split);
+        println!(" - {}-{}", minor_limit.0, minor_limit.1);
 
         for i in minor_limit.0..=minor_limit.1 {
             match split.direction {
@@ -133,14 +143,17 @@ fn generate_room() {
         let new_ma_l = minor_limit;
 
         // FIXME Debug this
+        println!(" - Creating children");
         for new_mi_l in [
             (major_limit.0, rand_split - 1),
             (rand_split + 1, major_limit.1),
         ] {
-            queue.push(match split.direction {
+            println!("   - new_mi_l: {:?}", new_mi_l);
+            queue.push_back(match split.direction {
                 Direction::VERTICAL => SplitQueue::new(Direction::HORIZONTAL, new_mi_l, new_ma_l),
-                Direction::HORIZONTAL => SplitQueue::new(Direction::HORIZONTAL, new_ma_l, new_mi_l),
+                Direction::HORIZONTAL => SplitQueue::new(Direction::VERTICAL, new_ma_l, new_mi_l),
             });
+            println!("   - queue: {:?}", queue.back());
         }
     }
 

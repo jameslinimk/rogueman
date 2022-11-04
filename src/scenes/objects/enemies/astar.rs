@@ -1,7 +1,7 @@
 use crate::scenes::rooms::Objects;
 use derive_new::new;
 use macroquad::prelude::Vec2;
-use maplit::hashmap;
+use maplit::{hashmap, hashset};
 use priority_queue::PriorityQueue;
 
 fn manhattan_heuristic(pos: &HashVec2, goal: &HashVec2) -> i32 {
@@ -61,30 +61,37 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
     }
 
     let mut parents = hashmap! {};
+    let mut explored = hashset! {};
 
     let mut pq = PriorityQueue::<HashVec2, i32>::new();
     pq.push(start, 0);
 
     #[allow(unused_assignments)]
     let mut parent = HashVec2::new(0, 0);
-    loop {
-        let p = pq.pop();
-        if p.is_none() {
-            return None;
-        }
-        parent = p.unwrap().0;
-
+    while let Some(p) = pq.pop() {
+        parent = p.0;
         if parent == goal {
             break;
         }
 
+        println!("Exploring {:?}", parent);
+
+        if explored.contains(&parent) {
+            continue;
+        }
+
         for child in &parent.directions(rooms) {
-            let value = manhattan_heuristic(child, &goal);
-            pq.push(*child, value);
+            pq.push(*child, manhattan_heuristic(child, &goal));
+
+            explored.insert(parent);
             if !parents.contains_key(child) {
                 parents.insert(*child, parent);
             }
         }
+    }
+
+    if parent != goal {
+        return None;
     }
 
     let mut path = vec![goal];
@@ -98,4 +105,18 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
     }
 
     Option::from(path)
+}
+
+#[test]
+fn test() {
+    let rooms = vec![
+        vec![Objects::AIR, Objects::WALL, Objects::AIR, Objects::AIR],
+        vec![Objects::WALL, Objects::WALL, Objects::AIR, Objects::AIR],
+        vec![Objects::AIR, Objects::AIR, Objects::WALL, Objects::WALL],
+        vec![Objects::AIR, Objects::AIR, Objects::WALL, Objects::AIR],
+    ];
+    let goal = HashVec2::new(3, 3);
+    let p = HashVec2::new(0, 0);
+
+    println!("{:?}", astar(p, goal, &rooms));
 }

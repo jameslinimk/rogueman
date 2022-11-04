@@ -3,6 +3,7 @@
 		"astar",
 		"consts",
 		"cooldown",
+		"hashset",
 		"hspd",
 		"maplit",
 		"powf",
