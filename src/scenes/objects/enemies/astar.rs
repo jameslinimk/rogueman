@@ -69,20 +69,19 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
     let mut parent = HashVec2::new(0, 0);
     while let Some(p) = pq.pop() {
         parent = p.0;
+
         if parent == goal {
             break;
         }
-
-        println!("Exploring {:?}", parent);
-
         if explored.contains(&parent) {
             continue;
         }
 
+        explored.insert(parent);
+
         for child in &parent.directions(rooms) {
             pq.push(*child, manhattan_heuristic(child, &goal));
 
-            explored.insert(parent);
             if !parents.contains_key(child) {
                 parents.insert(*child, parent);
             }
@@ -108,14 +107,14 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
 
 #[test]
 fn test() {
-    let rooms = vec![
+    let room = vec![
         vec![Objects::AIR, Objects::WALL, Objects::AIR, Objects::AIR],
-        vec![Objects::WALL, Objects::WALL, Objects::AIR, Objects::AIR],
+        vec![Objects::WALL, Objects::AIR, Objects::AIR, Objects::AIR],
         vec![Objects::AIR, Objects::AIR, Objects::WALL, Objects::WALL],
-        vec![Objects::AIR, Objects::AIR, Objects::WALL, Objects::AIR],
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
     ];
     let goal = HashVec2::new(3, 3);
     let p = HashVec2::new(0, 0);
 
-    println!("{:?}", astar(p, goal, &rooms));
+    println!("{:?}", astar(p, goal, &room));
 }

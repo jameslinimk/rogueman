@@ -1,11 +1,13 @@
 use derive_new::new;
 use lazy_static::lazy_static;
 use macroquad::prelude::{load_string, rand::gen_range, rand::srand};
-use maplit::hashmap;
+use maplit::{hashmap, hashset};
 use std::{
-    collections::{HashMap, VecDeque},
+    collections::{HashMap, HashSet, VecDeque},
+    f32::MIN,
     sync::Mutex,
-    time::SystemTime,
+    thread::sleep,
+    time::{Duration, SystemTime},
 };
 
 use super::objects::shapes::rect::Rect;
@@ -87,19 +89,141 @@ struct SplitQueue {
     y_limits: (usize, usize),
 }
 
-fn pop_random(raw: &mut Vec<SplitQueue>) -> SplitQueue {
+fn pop_random(raw: &mut Vec<SplitQueue>) -> Option<SplitQueue> {
+    if raw.is_empty() {
+        return None;
+    }
     let i = gen_range(0, raw.len());
     let copy = raw[i];
     raw.remove(i);
-    copy
+    Option::from(copy)
+}
+
+macro_rules! tuple_abs_diff {
+    ($tuple: ident) => {
+        $tuple.0.abs_diff($tuple.1)
+    };
+}
+
+macro_rules! subtract_if_not_zero {
+    ($number: expr) => {
+        if $number == 0 {
+            $number
+        } else {
+            $number - 1
+        }
+    };
+}
+
+fn cardinals(point: &(usize, usize)) -> [(usize, usize); 4] {
+    [
+        (point.0, point.1 + 1),
+        (point.0, subtract_if_not_zero!(point.1)),
+        (point.0 + 1, point.1),
+        (subtract_if_not_zero!(point.0), point.1),
+    ]
+}
+
+fn point_valid(point: &(usize, usize), room: &Vec<Vec<Objects>>) -> bool {
+    if point.1 >= room.len() || point.0 >= room[point.1].len() {
+        return false;
+    }
+
+    match room[point.1][point.0] {
+        Objects::AIR => true,
+        _ => false,
+    }
+}
+
+fn find_rect(
+    point: (usize, usize),
+    room: &Vec<Vec<Objects>>,
+    explored: &mut HashSet<(usize, usize)>,
+) -> Rect {
+    let mut queue = vec![point];
+
+    let mut max_left = usize::MAX;
+    let mut max_right = usize::MIN;
+    let mut max_top = usize::MAX;
+    let mut max_bottom = usize::MIN;
+
+    while let Some(point) = queue.pop() {
+        if explored.contains(&point) {
+            continue;
+        }
+
+        if !point_valid(&point, room) {
+            continue;
+        }
+
+        explored.insert(point);
+
+        max_right = point.0.max(max_right);
+        max_left = point.0.min(max_left);
+        max_top = point.1.min(max_top);
+        max_bottom = point.1.max(max_bottom);
+
+        for direction in &cardinals(&point) {
+            queue.push(*direction);
+        }
+    }
+
+    Rect::new(
+        max_left as f32,
+        max_top as f32,
+        max_left.abs_diff(max_right) as f32,
+        max_top.abs_diff(max_bottom) as f32,
+    )
+}
+
+#[test]
+fn find_rect_test() {
+    let room = vec![
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+    ];
+    let mut explored = hashset! {};
+
+    println!(
+        "find_rect((0, 0), &room): {:?}",
+        find_rect((0, 0), &room, &mut explored)
+    );
+}
+
+fn rand_rect(rect: &mut Rect) {
+    let scale = gen_range::<f32>(0.75, 0.95);
+
+    let x_diff = (rect.width - rect.width * scale).abs();
+    let y_diff = (rect.height - rect.height * scale).abs();
+
+    rect.width = (rect.width * scale).round();
+    rect.height = (rect.height * scale).round();
+
+    rect.pos.x = (rect.pos.x + x_diff * gen_range(0.0, 1.0)).round();
+    rect.pos.y = (rect.pos.y + y_diff * gen_range(0.0, 1.0)).round();
+}
+
+macro_rules! vec_remove {
+    ($vector: expr, $( $value: expr ), *) => {
+        $(
+            match $vector.iter().position(|x| x == $value) {
+                Some(index) => {
+                    $vector.remove(index);
+                },
+                None => {}
+            };
+        )*
+    };
 }
 
 #[test]
 fn generate_room() {
     let size = 100;
-    let min_room_size = size / 10;
+    let split_limit = size / 8;
 
-    srand(92935834993);
+    srand(2354234523452315623);
 
     let mut room = vec![vec![Objects::AIR; size as usize]; size as usize];
 
@@ -109,12 +233,7 @@ fn generate_room() {
         (0, size - 1),
     )];
 
-    let mut i = 0;
-    while let split = pop_random(&mut queue) {
-        // if i > 4 {
-        //     break;
-        // }
-
+    while let Some(split) = pop_random(&mut queue) {
         println!("split: {:?}", split);
 
         let (major_limit, minor_limit) = match split.direction {
@@ -122,12 +241,13 @@ fn generate_room() {
             Direction::HORIZONTAL => (split.y_limits, split.x_limits),
         };
 
-        if major_limit.0.abs_diff(major_limit.1) < min_room_size {
+        if tuple_abs_diff!(major_limit) < split_limit || tuple_abs_diff!(minor_limit) < split_limit
+        {
             continue;
         }
 
         /* ---------------------------- Splitting parent ---------------------------- */
-        let rand_split = gen_range(major_limit.0 + min_room_size, major_limit.1 - min_room_size);
+        let rand_split = gen_range(major_limit.0 + split_limit, major_limit.1 - split_limit);
 
         println!(" - rand_split: {:?}", rand_split);
         println!(" - {}-{}", minor_limit.0, minor_limit.1);
@@ -157,6 +277,108 @@ fn generate_room() {
                 Direction::HORIZONTAL => SplitQueue::new(Direction::VERTICAL, new_ma_l, new_mi_l),
             });
             println!("   - queue: {:?}", queue.last());
+        }
+    }
+
+    /* -------------------------- Detecting rectangles -------------------------- */
+    let mut rects = vec![];
+    let mut explored = hashset! {};
+    for (y, row) in room.iter().enumerate() {
+        for (x, _) in row.iter().enumerate() {
+            if !point_valid(&(x, y), &room) || explored.contains(&(x, y)) {
+                continue;
+            }
+
+            let rect = find_rect((x, y), &room, &mut explored);
+
+            rects.push(rect);
+        }
+    }
+
+    // FIXME overlaping rects
+
+    let mut sim_rects = vec![];
+    for rect in &rects {
+        let wi = rect.width - 2.0;
+        let he = rect.height - 2.0;
+
+        if wi < split_limit as f32 {
+            for point in [(rect.pos.x + 2.0) as usize, (rect.pos.x - 2.0) as usize] {
+                let mut empty_explored = hashset! {};
+                let r = find_rect((point, rect.pos.y as usize), &room, &mut empty_explored);
+
+                if rect == &r {
+                    continue;
+                }
+
+                if rect.pos.y == r.pos.y && rect.height == r.height {
+                    println!("rect: {:?}", rect);
+                    println!("r: {:?}", r);
+                    sim_rects.push((*rect, r));
+                }
+            }
+        }
+
+        if he < split_limit as f32 {
+            for point in [(rect.pos.y + 2.0) as usize, (rect.pos.y - 2.0) as usize] {
+                let mut empty_explored = hashset! {};
+                let r = find_rect((rect.pos.x as usize, point), &room, &mut empty_explored);
+
+                if rect == &r {
+                    continue;
+                }
+
+                if rect.pos.x == r.pos.x && rect.width == r.width {
+                    println!("rect: {:?}", rect);
+                    println!("r: {:?}", r);
+                    sim_rects.push((*rect, r));
+                }
+            }
+        }
+    }
+
+    for (r1, r2) in &sim_rects {
+        println!("New");
+        println!(" - r1: {:?}", r1);
+        println!(" - r2: {:?}", r2);
+
+        let new_rect = if r1.height == r2.height {
+            Rect::new(
+                r1.pos.x.min(r2.pos.x),
+                r1.pos.y.min(r2.pos.y),
+                (r1.pos.x.min(r2.pos.x) - r1.get_right().max(r2.get_right())).abs(),
+                r1.height,
+            )
+        } else {
+            Rect::new(
+                r1.pos.x.min(r2.pos.x),
+                r1.pos.y.min(r2.pos.y),
+                r1.width,
+                (r1.pos.y.min(r2.pos.y) - r1.get_bottom().max(r2.get_bottom())).abs(),
+            )
+        };
+
+        println!(" - new_rect: {:?}", new_rect);
+        // println!("rects.len(): {:?}", rects.len());
+        vec_remove!(rects, r1, r2);
+        // println!("rects.len(): {:?}", rects.len());
+
+        rects.push(new_rect);
+    }
+
+    // for rect in &mut rects {
+    //     rand_rect(rect);
+    // }
+
+    room = vec![vec![Objects::AIR; size as usize]; size as usize];
+    for rect in &rects {
+        for x in rect.pos.x as usize..=rect.get_right() as usize {
+            room[rect.pos.y as usize][x] = Objects::WALL;
+            room[rect.get_bottom() as usize][x] = Objects::WALL;
+        }
+        for y in rect.pos.y as usize..=rect.get_bottom() as usize {
+            room[y][rect.pos.x as usize] = Objects::WALL;
+            room[y][rect.get_right() as usize] = Objects::WALL;
         }
     }
 

@@ -1,7 +1,7 @@
 use super::line::Line;
 use macroquad::prelude::{draw_rectangle, vec2, Color, Vec2};
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 pub struct Rect {
     pub pos: Vec2,
     pub width: f32,
