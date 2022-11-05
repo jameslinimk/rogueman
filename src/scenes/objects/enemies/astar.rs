@@ -23,8 +23,8 @@ fn pos_valid(pos: &HashVec2, rooms: &Vec<Vec<Objects>>) -> bool {
 
 #[derive(Hash, PartialEq, PartialOrd, Eq, Ord, Debug, Clone, Copy, new)]
 pub struct HashVec2 {
-    x: i32,
-    y: i32,
+    pub x: i32,
+    pub y: i32,
 }
 impl HashVec2 {
     pub fn from_vec2(vec2: Vec2) -> HashVec2 {

@@ -5,10 +5,14 @@ use maplit::{hashmap, hashset};
 use std::{
     collections::{HashMap, HashSet, VecDeque},
     f32::MIN,
+    fs::File,
+    io::Write,
     sync::Mutex,
     thread::sleep,
     time::{Duration, SystemTime},
 };
+
+use crate::scenes::objects::enemies::astar::{astar, HashVec2};
 
 use super::objects::shapes::rect::Rect;
 
@@ -139,7 +143,7 @@ fn find_rect(
     point: (usize, usize),
     room: &Vec<Vec<Objects>>,
     explored: &mut HashSet<(usize, usize)>,
-) -> Rect {
+) -> Option<Rect> {
     let mut queue = vec![point];
 
     let mut max_left = usize::MAX;
@@ -168,32 +172,24 @@ fn find_rect(
         }
     }
 
-    Rect::new(
+    if max_right == usize::MAX
+        || max_top == usize::MAX
+        || max_right == usize::MIN
+        || max_bottom == usize::MIN
+    {
+        return None;
+    }
+
+    Option::from(Rect::new(
         max_left as f32,
         max_top as f32,
         max_left.abs_diff(max_right) as f32,
         max_top.abs_diff(max_bottom) as f32,
-    )
-}
-
-#[test]
-fn find_rect_test() {
-    let room = vec![
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
-    ];
-    let mut explored = hashset! {};
-
-    println!(
-        "find_rect((0, 0), &room): {:?}",
-        find_rect((0, 0), &room, &mut explored)
-    );
+    ))
 }
 
 fn rand_rect(rect: &mut Rect) {
-    let scale = gen_range::<f32>(0.75, 0.95);
+    let scale = gen_range::<f32>(0.7, 0.9);
 
     let x_diff = (rect.width - rect.width * scale).abs();
     let y_diff = (rect.height - rect.height * scale).abs();
@@ -218,40 +214,35 @@ macro_rules! vec_remove {
     };
 }
 
-#[test]
-fn generate_room() {
+fn generate_room() -> Vec<Vec<Objects>> {
     let size = 100;
-    let split_limit = size / 8;
-
-    srand(2354234523452315623);
+    let split_limit = size / 3;
 
     let mut room = vec![vec![Objects::AIR; size as usize]; size as usize];
 
     let mut queue = vec![SplitQueue::new(
-        Direction::VERTICAL,
+        if gen_range(0, 2) == 0 {
+            Direction::VERTICAL
+        } else {
+            Direction::HORIZONTAL
+        },
         (0, size - 1),
         (0, size - 1),
     )];
 
     while let Some(split) = pop_random(&mut queue) {
-        println!("split: {:?}", split);
-
         let (major_limit, minor_limit) = match split.direction {
             Direction::VERTICAL => (split.x_limits, split.y_limits),
             Direction::HORIZONTAL => (split.y_limits, split.x_limits),
         };
 
-        if tuple_abs_diff!(major_limit) < split_limit || tuple_abs_diff!(minor_limit) < split_limit
-        {
+        if tuple_abs_diff!(major_limit) <= split_limit {
             continue;
         }
 
         /* ---------------------------- Splitting parent ---------------------------- */
-        let rand_split = gen_range(major_limit.0 + split_limit, major_limit.1 - split_limit);
-
-        println!(" - rand_split: {:?}", rand_split);
-        println!(" - {}-{}", minor_limit.0, minor_limit.1);
-
+        let diff = tuple_abs_diff!(major_limit) as f32 * gen_range(0.3, 0.7);
+        let rand_split = major_limit.0 + diff as usize;
         for i in minor_limit.0..=minor_limit.1 {
             match split.direction {
                 Direction::VERTICAL => {
@@ -266,17 +257,26 @@ fn generate_room() {
         /* -------------------------- Calculating children -------------------------- */
         let new_ma_l = minor_limit;
 
-        println!(" - Creating children");
         for new_mi_l in [
             (major_limit.0, rand_split - 1),
             (rand_split + 1, major_limit.1),
         ] {
-            println!("   - new_mi_l: {:?}", new_mi_l);
             queue.push(match split.direction {
-                Direction::VERTICAL => SplitQueue::new(Direction::HORIZONTAL, new_mi_l, new_ma_l),
-                Direction::HORIZONTAL => SplitQueue::new(Direction::VERTICAL, new_ma_l, new_mi_l),
+                Direction::VERTICAL => {
+                    if tuple_abs_diff!(new_mi_l) < tuple_abs_diff!(new_ma_l) {
+                        SplitQueue::new(Direction::HORIZONTAL, new_mi_l, new_ma_l)
+                    } else {
+                        SplitQueue::new(Direction::VERTICAL, new_mi_l, new_ma_l)
+                    }
+                }
+                Direction::HORIZONTAL => {
+                    if tuple_abs_diff!(new_mi_l) < tuple_abs_diff!(new_ma_l) {
+                        SplitQueue::new(Direction::VERTICAL, new_ma_l, new_mi_l)
+                    } else {
+                        SplitQueue::new(Direction::HORIZONTAL, new_ma_l, new_mi_l)
+                    }
+                }
             });
-            println!("   - queue: {:?}", queue.last());
         }
     }
 
@@ -289,87 +289,18 @@ fn generate_room() {
                 continue;
             }
 
-            let rect = find_rect((x, y), &room, &mut explored);
+            let rect = find_rect((x, y), &room, &mut explored).unwrap();
 
             rects.push(rect);
         }
     }
 
-    // FIXME overlaping rects
-
-    let mut sim_rects = vec![];
-    for rect in &rects {
-        let wi = rect.width - 2.0;
-        let he = rect.height - 2.0;
-
-        if wi < split_limit as f32 {
-            for point in [(rect.pos.x + 2.0) as usize, (rect.pos.x - 2.0) as usize] {
-                let mut empty_explored = hashset! {};
-                let r = find_rect((point, rect.pos.y as usize), &room, &mut empty_explored);
-
-                if rect == &r {
-                    continue;
-                }
-
-                if rect.pos.y == r.pos.y && rect.height == r.height {
-                    println!("rect: {:?}", rect);
-                    println!("r: {:?}", r);
-                    sim_rects.push((*rect, r));
-                }
-            }
-        }
-
-        if he < split_limit as f32 {
-            for point in [(rect.pos.y + 2.0) as usize, (rect.pos.y - 2.0) as usize] {
-                let mut empty_explored = hashset! {};
-                let r = find_rect((rect.pos.x as usize, point), &room, &mut empty_explored);
-
-                if rect == &r {
-                    continue;
-                }
-
-                if rect.pos.x == r.pos.x && rect.width == r.width {
-                    println!("rect: {:?}", rect);
-                    println!("r: {:?}", r);
-                    sim_rects.push((*rect, r));
-                }
-            }
-        }
+    /* ---------------------------- Random sub rects ---------------------------- */
+    for rect in &mut rects {
+        rand_rect(rect);
     }
 
-    for (r1, r2) in &sim_rects {
-        println!("New");
-        println!(" - r1: {:?}", r1);
-        println!(" - r2: {:?}", r2);
-
-        let new_rect = if r1.height == r2.height {
-            Rect::new(
-                r1.pos.x.min(r2.pos.x),
-                r1.pos.y.min(r2.pos.y),
-                (r1.pos.x.min(r2.pos.x) - r1.get_right().max(r2.get_right())).abs(),
-                r1.height,
-            )
-        } else {
-            Rect::new(
-                r1.pos.x.min(r2.pos.x),
-                r1.pos.y.min(r2.pos.y),
-                r1.width,
-                (r1.pos.y.min(r2.pos.y) - r1.get_bottom().max(r2.get_bottom())).abs(),
-            )
-        };
-
-        println!(" - new_rect: {:?}", new_rect);
-        // println!("rects.len(): {:?}", rects.len());
-        vec_remove!(rects, r1, r2);
-        // println!("rects.len(): {:?}", rects.len());
-
-        rects.push(new_rect);
-    }
-
-    // for rect in &mut rects {
-    //     rand_rect(rect);
-    // }
-
+    /* ------------------------------ Drawing rects ----------------------------- */
     room = vec![vec![Objects::AIR; size as usize]; size as usize];
     for rect in &rects {
         for x in rect.pos.x as usize..=rect.get_right() as usize {
@@ -382,5 +313,140 @@ fn generate_room() {
         }
     }
 
+    /* -------------------------------- Pathways -------------------------------- */
+    let path_width = 3;
+    let mut adjacent_rects = hashmap! {};
+
+    for (i, rect) in rects.iter().enumerate() {
+        for dir in &[(1, 0), (-1, 0), (0, 1), (0, -1)] {
+            let mut i = 0;
+            let mut first_i = false;
+            loop {
+                if !first_i {
+                    first_i = true;
+                } else {
+                    i += 1;
+                }
+                if i >= size as i32 {
+                    break;
+                }
+
+                let x = if dir.0 != 0 {
+                    dir.0 * i
+                } else {
+                    rect.get_center().x as i32
+                };
+
+                let y = if dir.1 != 0 {
+                    dir.1 * i
+                } else {
+                    rect.get_center().y as i32
+                };
+
+                if x < 0 || y < 0 || x >= size as i32 || y >= size as i32 {
+                    break;
+                }
+
+                let mut empty_explored = hashset! {};
+
+                let r = match find_rect((x as usize, y as usize), &room, &mut empty_explored) {
+                    Some(rect) => rect,
+                    None => continue,
+                };
+                println!("r: {:?}", r);
+                println!("rects.contains(&r): {:?}", rects.contains(&r));
+                if rect != &r && rects.contains(&r) {
+                    println!("hello");
+                    let index = rects.iter().position(|rect| rect == &r).unwrap();
+
+                    if !adjacent_rects.contains_key(&i) {
+                        adjacent_rects.insert(i, vec![index]);
+                    } else {
+                        adjacent_rects.get_mut(&i).unwrap().push(index);
+                    };
+
+                    continue;
+                }
+            }
+        }
+        break;
+    }
+
+    println!("adjacent_rects: {:?}", adjacent_rects);
+
+    room
+}
+
+#[test]
+fn test() {
+    let room = generate_room();
     print_room(&room);
 }
+
+// /* -------------------------- Combining small rects ------------------------- */
+// let mut sim_rects = vec![];
+// let mut explored_rects = vec![];
+// for rect in &rects {
+//     if explored_rects.contains(rect) {
+//         continue;
+//     }
+//     explored_rects.push(*rect);
+
+//     let wi = rect.width - 2.0;
+//     let he = rect.height - 2.0;
+
+//     if wi < split_limit as f32 {
+//         for point in [(rect.pos.x + 2.0) as usize, (rect.pos.x - 2.0) as usize] {
+//             let mut empty_explored = hashset! {};
+//             let r = find_rect((point, rect.pos.y as usize), &room, &mut empty_explored);
+
+//             if explored_rects.contains(&r) || rect == &r {
+//                 continue;
+//             }
+
+//             explored_rects.push(r);
+
+//             if rect.pos.y == r.pos.y && rect.height == r.height {
+//                 sim_rects.push((*rect, r));
+//             }
+//         }
+//     }
+
+//     if he < split_limit as f32 {
+//         for point in [(rect.pos.y + 2.0) as usize, (rect.pos.y - 2.0) as usize] {
+//             let mut empty_explored = hashset! {};
+//             let r = find_rect((rect.pos.x as usize, point), &room, &mut empty_explored);
+
+//             if explored_rects.contains(&r) || rect == &r {
+//                 continue;
+//             }
+
+//             explored_rects.push(r);
+
+//             if rect.pos.x == r.pos.x && rect.width == r.width {
+//                 sim_rects.push((*rect, r));
+//             }
+//         }
+//     }
+// }
+
+// for (r1, r2) in &sim_rects {
+//     let new_rect = if r1.height == r2.height {
+//         Rect::new(
+//             r1.pos.x.min(r2.pos.x),
+//             r1.pos.y.min(r2.pos.y),
+//             (r1.pos.x.min(r2.pos.x) - r1.get_right().max(r2.get_right())).abs(),
+//             r1.height,
+//         )
+//     } else {
+//         Rect::new(
+//             r1.pos.x.min(r2.pos.x),
+//             r1.pos.y.min(r2.pos.y),
+//             r1.width,
+//             (r1.pos.y.min(r2.pos.y) - r1.get_bottom().max(r2.get_bottom())).abs(),
+//         )
+//     };
+
+//     vec_remove!(rects, r1, r2);
+//     rects.push(new_rect);
+// }

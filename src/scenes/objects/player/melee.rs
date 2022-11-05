@@ -1,6 +1,7 @@
 use super::player::Player;
 use crate::scenes::objects::items::melee::Melee;
 use crate::scenes::objects::shapes::line::Line;
+use crate::unwrap_or_return;
 use crate::util::angle;
 use crate::util::project;
 use crate::util::rel_mouse_pos;
@@ -10,10 +11,7 @@ use macroquad::prelude::{get_time, is_key_pressed, is_mouse_button_pressed, Mous
 
 impl Player {
     pub fn update_melee(&mut self) {
-        let melee = match self.get_melee() {
-            Some(melee) => melee,
-            None => return,
-        };
+        let melee = unwrap_or_return!(self.get_melee());
 
         for i in 1..=3 {
             let key = NUMBER_KEYS[i - 1];
@@ -62,10 +60,7 @@ impl Player {
     }
 
     pub fn draw_melee(&mut self) {
-        let melee = match self.get_melee() {
-            Some(melee) => melee,
-            None => return,
-        };
+        let melee = unwrap_or_return!(self.get_melee());
 
         let (swinging, _) = self.melee_info(melee);
         if swinging {

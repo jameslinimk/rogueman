@@ -170,6 +170,16 @@ macro_rules! repeat_function {
     };
 }
 
+#[macro_export]
+macro_rules! unwrap_or_return {
+    ( $option: expr ) => {
+        match $option {
+            Some(value) => value,
+            None => return,
+        }
+    };
+}
+
 pub fn hex(hex: &'static str) -> Color {
     Color::from_rgba(
         u8::from_str_radix(&hex[1..3], 16).unwrap(),

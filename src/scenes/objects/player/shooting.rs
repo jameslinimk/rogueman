@@ -3,6 +3,7 @@ use crate::scenes::game::GAME;
 use crate::scenes::objects::bullet::Bullet;
 use crate::scenes::objects::items::guns::Gun;
 use crate::scenes::objects::objects::Objects;
+use crate::unwrap_or_return;
 use crate::util::angle;
 use crate::util::rel_mouse_pos;
 use macroquad::prelude::{
@@ -11,10 +12,7 @@ use macroquad::prelude::{
 
 impl Player {
     pub fn update_shoot(&mut self) {
-        let gun = match self.get_gun() {
-            Some(gun) => gun,
-            None => return,
-        };
+        let gun = unwrap_or_return!(self.get_gun());
 
         /* ---------------------------- Switching weapons --------------------------- */
         if is_key_pressed(KeyCode::G) {
@@ -35,10 +33,7 @@ impl Player {
     }
 
     fn shoot(&mut self) {
-        let gun = match self.get_gun() {
-            Some(gun) => gun,
-            None => return,
-        };
+        let gun = unwrap_or_return!(self.get_gun());
 
         if self.last_shot == 0.0 || get_time() > self.last_shot + gun.fire_delay as f64 {
             GAME().camera.set_shake(gun.shake);
