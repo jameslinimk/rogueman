@@ -7,18 +7,18 @@ use maplit::hashmap;
 
 use super::main::Player;
 use crate::scenes::game::GAME;
-use crate::util::project;
+use crate::util::{deg_to_rad, project};
 
 lazy_static! {
     static ref ROLL_ANGLES: HashMap<String, f32> = hashmap! {
-        "wa".to_owned() => 225.0 * (PI / 180.0),
-        "wd".to_owned() => 315.0 * (PI / 180.0),
-        "sd".to_owned() => 45.0 * (PI / 180.0),
-        "sa".to_owned() => 135.0 * (PI / 180.0),
-        "w".to_owned() => 270.0 * (PI / 180.0),
-        "s".to_owned() => 90.0 * (PI / 180.0),
-        "a".to_owned() => 180.0 * (PI / 180.0),
-        "d".to_owned() => 0.0 * (PI / 180.0)
+        "wa".to_owned() => deg_to_rad(225.0),
+        "wd".to_owned() => deg_to_rad(315.0),
+        "sd".to_owned() => deg_to_rad(45.0),
+        "sa".to_owned() => deg_to_rad(135.0),
+        "w".to_owned() => deg_to_rad(270.0),
+        "s".to_owned() => deg_to_rad(90.0),
+        "a".to_owned() => deg_to_rad(180.0),
+        "d".to_owned() => deg_to_rad(0.0)
     };
 }
 

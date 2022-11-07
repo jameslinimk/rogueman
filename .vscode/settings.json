@@ -1,4 +1,7 @@
 {
+	"[rust]": {
+		"editor.defaultFormatter": "rust-lang.rust-analyzer"
+	},
 	"cSpell.words": [
 		"adjacents",
 		"astar",
@@ -10,9 +13,7 @@
 		"powf",
 		"rects",
 		"rustfmt",
+		"trunc",
 		"vspd"
-	],
-	"[rust]": {
-		"editor.defaultFormatter": "rust-lang.rust-analyzer"
-	}
+	]
 }

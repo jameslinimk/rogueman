@@ -103,7 +103,7 @@ fn generate_room() -> Vec<Vec<Objects>> {
     }
 
     /* ------------------------------ Drawing rects ----------------------------- */
-    room = vec![vec![Objects::Air; size as usize]; size as usize];
+    room = vec![vec![Objects::Air; size]; size];
     for rect in &rects {
         draw_rect(rect, &mut room);
     }
