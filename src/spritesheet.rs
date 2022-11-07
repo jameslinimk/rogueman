@@ -1,26 +1,26 @@
 use derive_new::new;
-use macroquad::prelude::{Rect, Texture2D, WHITE};
+use macroquad::prelude::{vec2, Rect, Texture2D, WHITE};
 use macroquad::text::draw_text_ex;
 use macroquad::texture::{draw_texture_ex, DrawTextureParams};
 use macroquad::time::{get_frame_time, get_time};
 
-#[derive(new)]
+#[derive(Debug, new)]
 pub struct SpriteSheet {
-    base_texture: Texture2D,
-    width: u16,
-    frame_duration: f32,
+    pub base_texture: Texture2D,
+    pub width: u16,
+    pub frame_duration: f32,
 
     #[new(value = "f64::MIN")]
-    last_frame: f64,
+    pub last_frame: f64,
     #[new(value = "0")]
-    current_frame: u16,
+    pub current_frame: u16,
 }
 impl SpriteSheet {
-    pub fn draw(&self, x: f32, y: f32) {
-        let width = self.base_texture.width();
-        let height = self.base_texture.height();
+    pub fn draw(&self, x: f32, y: f32, width: f32) {
+        let w = self.base_texture.width() / self.width as f32;
+        let h = self.base_texture.height();
 
-        let rect = Rect::new(self.current_frame as f32 * width, 0.0, width, height);
+        let rect = Rect::new(self.current_frame as f32 * w, 0.0, w, h);
         draw_texture_ex(
             self.base_texture,
             x,
@@ -28,9 +28,10 @@ impl SpriteSheet {
             WHITE,
             DrawTextureParams {
                 source: Option::from(rect),
+                dest_size: Option::from(vec2(width, h * (width / w))),
                 ..DrawTextureParams::default()
             },
-        )
+        );
     }
 
     pub fn update(&mut self) {

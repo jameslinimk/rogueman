@@ -6,8 +6,9 @@ use crate::scenes::objects::items::guns::{Gun, GUNS};
 use crate::scenes::objects::items::melee::{Melee, MELEES};
 use crate::scenes::objects::shapes::line::Line;
 use crate::scenes::objects::shapes::rect::Rect;
+use crate::spritesheet::SpriteSheet;
 use crate::util::{multiline_text, rx_smooth, ry_smooth, DAMAGE_COOLDOWN};
-use crate::GAME;
+use crate::{repeat_function, GAME};
 
 #[derive(Debug, new)]
 pub struct Player {
@@ -52,22 +53,28 @@ pub struct Player {
     pub roll_angle: f32,
     #[new(value = "1600.0")]
     pub roll_speed: f32,
+
+    #[new(value = "SpriteSheet::new(get_image(\"./assets/player/movement/move_a.png\"), 4, 0.1)")]
+    pub move_a: SpriteSheet,
 }
 impl Player {
-    pub async fn init(&self) {
-        load_image("path").await;
+    pub async fn init() {
+        load_image("./assets/player/movement/move_a.png").await;
     }
 
     pub fn update(&mut self) {
         self.update_movement();
         self.update_shoot();
         self.update_melee();
+        repeat_function!(update, self.move_a);
 
         GAME().camera.target = self.rect.get_center();
     }
 
     pub fn draw(&mut self) {
         self.rect.draw(WHITE);
+        let center = self.rect.get_center();
+        self.move_a.draw(center.x - 32.0, center.y - 32.0, 64.0);
 
         self.draw_melee();
         self.draw_ui();
@@ -105,11 +112,11 @@ impl Player {
             let y = ry_smooth(screen_height() - 74.0);
 
             /* --------------------------------- Border --------------------------------- */
-            let border_texture = get_image("./assets/guns/border.png").unwrap();
+            let border_texture = get_image("./assets/guns/border.png");
             draw_texture(border_texture, x, y, WHITE);
 
             /* -------------------------------- Gun image ------------------------------- */
-            let texture = get_image(g.image_file).unwrap();
+            let texture = get_image(g.image_file);
             draw_texture(texture, x, y, WHITE);
 
             /* ---------------------------- Shooting cooldown --------------------------- */

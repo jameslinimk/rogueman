@@ -40,12 +40,12 @@ impl GameScene {
         }
     }
 
-    pub async fn init(&self) {
+    pub async fn init() {
         load_image("./assets/guns/border.png").await;
         for gun in GUNS {
             load_image(gun.image_file).await;
         }
-        self.player.init().await;
+        Player::init().await;
     }
 }
 impl Object for GameScene {
