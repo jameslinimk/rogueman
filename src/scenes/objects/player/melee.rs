@@ -83,9 +83,9 @@ impl Player {
     }
 
     pub fn get_melee(&self) -> Option<Melee> {
-        if self.melees.len() == 0 || self.selected_melee >= self.melees.len() {
+        if self.melees.is_empty() || self.selected_melee >= self.melees.len() {
             return None;
         }
-        return Option::from(self.melees[self.selected_melee]);
+        Option::from(self.melees[self.selected_melee])
     }
 }

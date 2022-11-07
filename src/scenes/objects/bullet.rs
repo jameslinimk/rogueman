@@ -41,20 +41,20 @@ impl Bullet {
             0.0
         };
 
-        return Bullet {
+        Bullet {
             traveled_through: 0,
             angle: angle + spread,
             rect: Rect::new_center_vec(pos, config.bullet_size, config.bullet_size),
             config,
             created: get_time(),
             id: obj_id(),
-        };
+        }
     }
 }
 impl Bullet {
     fn update_collision(&mut self) {
         for wall in &mut GAME().walls {
-            if self.rect.touches_rect(&wall) {
+            if self.rect.touches_rect(wall) {
                 game_remove!(GAME().objects, self.id);
                 return;
             }
@@ -74,16 +74,13 @@ impl Bullet {
                     }
                 }
             }
-        } else {
-            if self.rect.touches_rect(&GAME().player.rect) {
-                let success = GAME().player.hit(self.config.damage);
+        } else if self.rect.touches_rect(&GAME().player.rect) {
+            let success = GAME().player.hit(self.config.damage);
 
-                if success {
-                    self.traveled_through += 1;
-                    if self.traveled_through > self.config.pierce {
-                        game_remove!(GAME().objects, self.id);
-                        return;
-                    }
+            if success {
+                self.traveled_through += 1;
+                if self.traveled_through > self.config.pierce {
+                    game_remove!(GAME().objects, self.id);
                 }
             }
         }
@@ -109,6 +106,6 @@ impl IDObject for Bullet {
     }
 
     fn get_id(&self) -> u32 {
-        return self.id;
+        self.id
     }
 }

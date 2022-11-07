@@ -1,15 +1,10 @@
-use derive_new::new;
-use macroquad::prelude::{RED, YELLOW};
-
+use super::shapes::rect::Rect;
 use crate::{
-    scenes::{
-        game::GAME,
-        object::{obj_id, IDObject},
-    },
+    scenes::object::{obj_id, IDObject},
     util::rel_mouse_pos,
 };
-
-use super::shapes::{line::Line, rect::Rect};
+use derive_new::new;
+use macroquad::prelude::{RED, YELLOW};
 
 #[derive(new)]
 pub struct TestObj {
@@ -30,6 +25,6 @@ impl IDObject for TestObj {
     }
 
     fn get_id(&self) -> u32 {
-        return self.id;
+        self.id
     }
 }

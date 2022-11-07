@@ -1,4 +1,4 @@
 pub mod game;
 pub mod object;
 pub mod objects;
-pub mod rooms;
+pub mod room_gen;

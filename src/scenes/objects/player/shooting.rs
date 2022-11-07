@@ -2,7 +2,7 @@ use super::player::Player;
 use crate::scenes::game::GAME;
 use crate::scenes::objects::bullet::Bullet;
 use crate::scenes::objects::items::guns::Gun;
-use crate::scenes::objects::objects::Objects;
+use crate::scenes::objects::objects_enum::Objects;
 use crate::unwrap_or_return;
 use crate::util::angle;
 use crate::util::rel_mouse_pos;
@@ -49,9 +49,10 @@ impl Player {
     }
 
     pub fn get_gun(&self) -> Option<Gun> {
-        if self.guns.len() == 0 || self.selected_gun >= self.guns.len() {
+        if self.guns.is_empty() || self.selected_gun >= self.guns.len() {
             return None;
         }
-        return Option::from(self.guns[self.selected_gun]);
+
+        Option::from(self.guns[self.selected_gun])
     }
 }

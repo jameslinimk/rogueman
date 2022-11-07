@@ -9,11 +9,9 @@ lazy_static! {
 
 pub fn get_image(path: &str) -> Option<Texture2D> {
     match ASSET_MAP.lock().unwrap().get(path) {
-        Some(texture) => {
-            return Option::from(texture.to_owned());
-        }
-        None => return None,
-    };
+        Some(texture) => Option::from(texture.to_owned()),
+        None => None,
+    }
 }
 
 pub async fn load_image(path: &'static str) -> Texture2D {
@@ -22,5 +20,5 @@ pub async fn load_image(path: &'static str) -> Texture2D {
     }
     let resource = load_texture(path).await.unwrap();
     ASSET_MAP.lock().unwrap().insert(path, resource.to_owned());
-    return resource;
+    resource
 }

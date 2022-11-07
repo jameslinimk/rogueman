@@ -38,7 +38,7 @@ impl Enemy {
     }
 
     pub fn get_id(&self) -> u32 {
-        return self.id;
+        self.id
     }
 
     pub fn hit(&mut self, damage: f32) -> bool {
@@ -51,6 +51,6 @@ impl Enemy {
         if self.health < 0.0 {
             game_remove!(GAME().enemies, self.id);
         }
-        return true;
+        true
     }
 }

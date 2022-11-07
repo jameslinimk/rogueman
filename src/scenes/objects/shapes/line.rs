@@ -40,7 +40,7 @@ pub fn polygons_intersect(polygons: &[Vec<Vec2>; 2]) -> bool {
         }
     }
 
-    return true;
+    true
 }
 
 #[derive(Debug)]

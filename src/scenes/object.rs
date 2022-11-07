@@ -16,6 +16,6 @@ static mut _OBJ_ID: u32 = 0;
 pub fn obj_id() -> u32 {
     unsafe {
         _OBJ_ID += 1;
-        return _OBJ_ID;
+        _OBJ_ID
     }
 }

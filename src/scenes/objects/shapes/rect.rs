@@ -26,14 +26,14 @@ impl Rect {
         }
     }
     pub fn new_center_vec(center: Vec2, width: f32, height: f32) -> Rect {
-        return Rect::new_center(center.x, center.y, width, height);
+        Rect::new_center(center.x, center.y, width, height)
     }
 
     pub fn get_center(&self) -> Vec2 {
-        return vec2(
+        vec2(
             self.pos.x + self.width / 2.0,
             self.pos.y + self.height / 2.0,
-        );
+        )
     }
 
     pub fn set_center(&mut self, x: f32, y: f32) {
@@ -46,16 +46,16 @@ impl Rect {
     }
 
     pub fn get_top(&self) -> f32 {
-        return self.pos.y;
+        self.pos.y
     }
     pub fn get_bottom(&self) -> f32 {
-        return self.pos.y + self.height;
+        self.pos.y + self.height
     }
     pub fn get_right(&self) -> f32 {
-        return self.pos.x + self.width;
+        self.pos.x + self.width
     }
     pub fn get_left(&self) -> f32 {
-        return self.pos.x;
+        self.pos.x
     }
 
     pub fn set_top(&mut self, top: f32) {
@@ -72,21 +72,21 @@ impl Rect {
     }
 
     pub fn touches_rect(&self, rect: &Rect) -> bool {
-        return self.pos.x < rect.get_right()
+        self.pos.x < rect.get_right()
             && self.get_right() > rect.pos.x
             && self.pos.y < rect.get_bottom()
-            && self.get_bottom() > rect.pos.y;
+            && self.get_bottom() > rect.pos.y
     }
 
     pub fn touches_line(&self, line: &mut Line) -> bool {
-        return line.touches_rect(self);
+        line.touches_rect(self)
     }
 
     pub fn touches_point(&self, point: &Vec2) -> bool {
-        return !(point.x > self.get_right()
+        !(point.x > self.get_right()
             || point.x < self.get_left()
             || point.y > self.get_bottom()
-            || point.y < self.get_top());
+            || point.y < self.get_top())
     }
 
     pub fn draw(&self, color: Color) {

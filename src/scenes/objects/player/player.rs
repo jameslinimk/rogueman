@@ -80,12 +80,12 @@ impl Player {
                 if gun.is_none() {
                     "None"
                 } else {
-                    &gun.unwrap().name
+                    gun.unwrap().name
                 },
                 if melee.is_none() {
                     "None"
                 } else {
-                    &melee.unwrap().name
+                    melee.unwrap().name
                 },
             ),
             rx_smooth(0.0),
@@ -95,7 +95,7 @@ impl Player {
         );
 
         /* -------------------------------- Gun info -------------------------------- */
-        if gun.is_some() {
+        if let Some(g) = gun {
             let x = rx_smooth(10.0);
             let y = ry_smooth(screen_height() - 74.0);
 
@@ -104,11 +104,11 @@ impl Player {
             draw_texture(border_texture, x, y, WHITE);
 
             /* -------------------------------- Gun image ------------------------------- */
-            let texture = get_image(gun.unwrap().image_file).unwrap();
+            let texture = get_image(g.image_file).unwrap();
             draw_texture(texture, x, y, WHITE);
 
             /* ---------------------------- Shooting cooldown --------------------------- */
-            let fire_delay = gun.unwrap().fire_delay as f64;
+            let fire_delay = g.fire_delay as f64;
             let ratio =
                 ((get_time() - self.last_shot).clamp(0.0, fire_delay) - fire_delay) / fire_delay;
             draw_rectangle(
@@ -131,6 +131,7 @@ impl Player {
         if self.health < 0.0 {
             println!("Player died");
         }
-        return true;
+
+        true
     }
 }

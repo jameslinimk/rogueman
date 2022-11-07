@@ -5,7 +5,7 @@ mod util;
 use crate::scenes::game::GAME;
 use crate::scenes::object::Object;
 use macroquad::prelude::{next_frame, Conf};
-use scenes::rooms::init_rooms;
+use scenes::room_gen::gen::init_rooms;
 
 fn config() -> Conf {
     Conf {

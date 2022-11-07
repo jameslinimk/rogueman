@@ -1,13 +1,14 @@
-use crate::scenes::rooms::Objects;
 use derive_new::new;
 use macroquad::prelude::Vec2;
 use maplit::{hashmap, hashset};
 use priority_queue::PriorityQueue;
 
+use crate::scenes::room_gen::gen::Objects;
+
 fn manhattan_heuristic(pos: &HashVec2, goal: &HashVec2) -> i32 {
     let x_dis = pos.x.abs_diff(goal.x) as i32;
     let y_dis = pos.y.abs_diff(goal.y) as i32;
-    return -(x_dis + y_dis);
+    -(x_dis + y_dis)
 }
 
 fn pos_valid(pos: &HashVec2, rooms: &Vec<Vec<Objects>>) -> bool {
@@ -15,10 +16,7 @@ fn pos_valid(pos: &HashVec2, rooms: &Vec<Vec<Objects>>) -> bool {
         return false;
     }
 
-    match rooms[pos.y as usize][pos.x as usize] {
-        Objects::WALL => false,
-        _ => true,
-    }
+    !matches!(rooms[pos.y as usize][pos.x as usize], Objects::WALL)
 }
 
 #[derive(Hash, PartialEq, PartialOrd, Eq, Ord, Debug, Clone, Copy, new)]
@@ -56,7 +54,7 @@ impl HashVec2 {
 }
 
 pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Option<Vec<HashVec2>> {
-    if !pos_valid(&start, &rooms) || !pos_valid(&goal, &rooms) {
+    if !pos_valid(&start, rooms) || !pos_valid(&goal, rooms) {
         return None;
     }
 
