@@ -16,7 +16,7 @@ fn pos_valid(pos: &HashVec2, rooms: &Vec<Vec<Objects>>) -> bool {
         return false;
     }
 
-    !matches!(rooms[pos.y as usize][pos.x as usize], Objects::WALL)
+    !matches!(rooms[pos.y as usize][pos.x as usize], Objects::Wall)
 }
 
 #[derive(Hash, PartialEq, PartialOrd, Eq, Ord, Debug, Clone, Copy, new)]
@@ -106,10 +106,10 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
 #[test]
 fn test() {
     let room = vec![
-        vec![Objects::AIR, Objects::WALL, Objects::AIR, Objects::AIR],
-        vec![Objects::WALL, Objects::AIR, Objects::AIR, Objects::AIR],
-        vec![Objects::AIR, Objects::AIR, Objects::WALL, Objects::WALL],
-        vec![Objects::AIR, Objects::AIR, Objects::AIR, Objects::AIR],
+        vec![Objects::Air, Objects::Wall, Objects::Air, Objects::Air],
+        vec![Objects::Wall, Objects::Air, Objects::Air, Objects::Air],
+        vec![Objects::Air, Objects::Air, Objects::Wall, Objects::Wall],
+        vec![Objects::Air, Objects::Air, Objects::Air, Objects::Air],
     ];
     let goal = HashVec2::new(3, 3);
     let p = HashVec2::new(0, 0);

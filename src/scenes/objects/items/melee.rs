@@ -1,4 +1,4 @@
-use super::items::Rarities;
+use super::item::Rarities;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Melee {
@@ -20,7 +20,7 @@ const POCKET_KNIFE: Melee = Melee {
     range_width: 50.0,
     delay: 0.2,
     swing_duration: 0.1,
-    rarity: Rarities::COMMON,
+    rarity: Rarities::Common,
 };
 
 pub const MELEES: [Melee; 1] = [POCKET_KNIFE];

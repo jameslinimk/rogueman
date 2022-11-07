@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::player::Player;
+use super::main::Player;
 use crate::scenes::game::GAME;
 use crate::util::project;
 use lazy_static::lazy_static;

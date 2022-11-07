@@ -7,8 +7,8 @@ pub fn print_room(rooms: &Vec<Vec<Objects>>) {
     for row in rooms {
         for cell in row {
             let sym = match cell {
-                Objects::AIR => "⬜",
-                Objects::WALL => "⬛",
+                Objects::Air => "⬜",
+                Objects::Wall => "⬛",
             };
             print!("{}", sym);
         }
@@ -58,7 +58,7 @@ pub fn point_valid(point: &(usize, usize), room: &Vec<Vec<Objects>>) -> bool {
         return false;
     }
 
-    matches!(room[point.1][point.0], Objects::AIR)
+    matches!(room[point.1][point.0], Objects::Air)
 }
 
 pub fn find_rect(
@@ -139,15 +139,15 @@ macro_rules! vec_remove {
 
 pub fn draw_rect(rect: &Rect, room: &mut [Vec<Objects>]) {
     for x in rect.pos.x as usize..=rect.get_right() as usize {
-        room[rect.pos.y as usize][x] = Objects::WALL;
-        room[rect.get_bottom() as usize][x] = Objects::WALL;
+        room[rect.pos.y as usize][x] = Objects::Wall;
+        room[rect.get_bottom() as usize][x] = Objects::Wall;
     }
     for row in room
         .iter_mut()
         .take(rect.get_bottom() as usize + 1)
         .skip(rect.pos.y as usize)
     {
-        row[rect.pos.x as usize] = Objects::WALL;
-        row[rect.get_right() as usize] = Objects::WALL;
+        row[rect.pos.x as usize] = Objects::Wall;
+        row[rect.get_right() as usize] = Objects::Wall;
     }
 }

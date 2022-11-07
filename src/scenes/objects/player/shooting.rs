@@ -1,4 +1,4 @@
-use super::player::Player;
+use super::main::Player;
 use crate::scenes::game::GAME;
 use crate::scenes::objects::bullet::Bullet;
 use crate::scenes::objects::items::guns::Gun;

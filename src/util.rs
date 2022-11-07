@@ -15,7 +15,7 @@ pub fn angle(origin: Vec2, dest: Vec2) -> f32 {
     let x_dist = dest.x - origin.x;
     let y_dist = dest.y - origin.y;
 
-    return (-y_dist).atan2(x_dist) % (2.0 * PI);
+    (-y_dist).atan2(x_dist) % (2.0 * PI)
 }
 
 /// It takes two points, and returns the opposite angle between them
@@ -23,25 +23,25 @@ pub fn opposite_angle(origin: Vec2, dest: Vec2) -> f32 {
     let x_dist = origin.x - dest.x;
     let y_dist = origin.y - dest.y;
 
-    return (-y_dist).atan2(x_dist) % (2.0 * PI);
+    (-y_dist).atan2(x_dist) % (2.0 * PI)
 }
 
 /// It takes a point, an angle, and a distance, and returns a new point that is the distance away from the original point in the direction of the angle
 pub fn project(origin: Vec2, angle: f32, distance: f32) -> Vec2 {
-    return vec2(
+    vec2(
         origin.x + (angle.cos() * distance),
         origin.y - (angle.sin() * distance),
-    );
+    )
 }
 
 /// Converts degrees to radians
 pub fn deg_to_rad(degrees: f32) -> f32 {
-    return degrees * PI / 180.0;
+    degrees * PI / 180.0
 }
 
 /// Converts radians to degrees
 pub fn rad_to_deg(radians: f32) -> f32 {
-    return radians * 180.0 / PI;
+    radians * 180.0 / PI
 }
 
 /// It returns the x position relative to the screen
@@ -87,22 +87,22 @@ pub fn ry_smooth(y: f32) -> f32 {
 /// It returns the mouse position relative to the screen
 pub fn rel_mouse_pos() -> Vec2 {
     let mouse_pos = mouse_position();
-    return vec2(rx(mouse_pos.0), ry(mouse_pos.1));
+    vec2(rx(mouse_pos.0), ry(mouse_pos.1))
 }
 
 /// It takes two points and returns the distance between them
 pub fn distance(p1: Vec2, p2: Vec2) -> f32 {
-    return ((p1.x - p2.x).powf(2.0) + (p1.y - p2.y).powf(2.0)).sqrt();
+    ((p1.x - p2.x).powf(2.0) + (p1.y - p2.y).powf(2.0)).sqrt()
 }
 
 /// Converts a value from `0.0` - `1.0` to an ease-in-out curve (sign wave)
 pub fn ease_in_out(x: f32) -> f32 {
-    return (-((PI * x).cos() - 1.0) / 2.0).clamp(0.0, 1.0);
+    (-((PI * x).cos() - 1.0) / 2.0).clamp(0.0, 1.0)
 }
 
 pub fn multiline_text(text: &str, x: f32, y: f32, font_size: u16, color: Color) {
     let height = measure_text(text, None, font_size, 1.0).height;
-    for (i, line) in text.split("\n").enumerate() {
+    for (i, line) in text.lines().enumerate() {
         draw_text(line, x, y + height * i as f32, font_size as f32, color);
     }
 }
@@ -115,7 +115,7 @@ pub fn multiline_text_ex(text: &str, x: f32, y: f32, font_size: u16, params: Tex
         params.font_scale,
     )
     .height;
-    for (i, line) in text.split("\n").enumerate() {
+    for (i, line) in text.lines().enumerate() {
         draw_text_ex(line, x, y + height * i as f32, params);
     }
 }

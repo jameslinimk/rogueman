@@ -1,6 +1,6 @@
 use crate::{camera::ShakeConfig, scenes::objects::bullet::BulletConfig};
 
-use super::items::Rarities;
+use super::item::Rarities;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Gun {
@@ -19,7 +19,7 @@ const PISTOL: Gun = Gun {
     image_file: "./assets/guns/pistol.png",
     holdable: true,
     fire_delay: 0.2,
-    rarity: Rarities::COMMON,
+    rarity: Rarities::Common,
     level: 1,
     bullet_config: BulletConfig {
         speed: 1000.0,
@@ -41,7 +41,7 @@ const SMG: Gun = Gun {
     image_file: "./assets/guns/smg.png",
     holdable: true,
     fire_delay: 0.1,
-    rarity: Rarities::COMMON,
+    rarity: Rarities::Common,
     level: 1,
     bullet_config: BulletConfig {
         speed: 1000.0,

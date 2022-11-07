@@ -3,7 +3,7 @@ use super::objects::assets::load_image;
 use super::objects::enemies::enemy::Enemy;
 use super::objects::items::guns::GUNS;
 use super::objects::objects_enum::Objects;
-use super::objects::player::player::Player;
+use super::objects::player::main::Player;
 use super::objects::test::TestObj;
 use super::room_gen::gen::{load_room, Objects as RoomObjects, ROOMS};
 use crate::camera::Camera;

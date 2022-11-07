@@ -1,3 +1,3 @@
 pub mod guns;
-pub mod items;
+pub mod item;
 pub mod melee;

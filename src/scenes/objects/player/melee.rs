@@ -1,4 +1,4 @@
-use super::player::Player;
+use super::main::Player;
 use crate::scenes::objects::items::melee::Melee;
 use crate::scenes::objects::shapes::line::Line;
 use crate::unwrap_or_return;

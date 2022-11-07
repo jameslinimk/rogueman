@@ -15,14 +15,14 @@ use super::{paths::paths, util::print_room};
 
 #[derive(Clone, Copy, Debug)]
 pub enum Objects {
-    AIR,
-    WALL,
+    Air,
+    Wall,
 }
 
 lazy_static! {
     static ref OBJECT_KEYS: HashMap<&'static str, Objects> = hashmap! {
-        " " => Objects::AIR,
-        "#" => Objects::WALL,
+        " " => Objects::Air,
+        "#" => Objects::Wall,
     };
     pub static ref ROOMS: Mutex<Vec<Vec<Vec<Objects>>>> = Mutex::new(vec![]);
 }
@@ -46,14 +46,14 @@ pub async fn init_rooms() {
     }
 }
 
-pub fn load_room(room: &Vec<Vec<Objects>>) -> Vec<Rect> {
+pub fn load_room(room: &[Vec<Objects>]) -> Vec<Rect> {
     let mut walls: Vec<Rect> = vec![];
 
     for (y, line) in room.iter().enumerate() {
         for (x, obj) in line.iter().enumerate() {
             match obj {
-                Objects::AIR => {}
-                Objects::WALL => {
+                Objects::Air => {}
+                Objects::Wall => {
                     walls.push(Rect::new(x as f32 * 30.0, y as f32 * 30.0, 30.0, 30.0));
                 }
             }
@@ -65,8 +65,8 @@ pub fn load_room(room: &Vec<Vec<Objects>>) -> Vec<Rect> {
 
 #[derive(Clone, Copy, Debug)]
 pub enum Direction {
-    VERTICAL,
-    HORIZONTAL,
+    Vertical,
+    Horizontal,
 }
 #[derive(Clone, Copy, Debug, new)]
 pub struct SplitQueue {
@@ -104,7 +104,7 @@ fn generate_room() -> Vec<Vec<Objects>> {
     }
 
     /* ------------------------------ Drawing rects ----------------------------- */
-    room = vec![vec![Objects::AIR; size as usize]; size as usize];
+    room = vec![vec![Objects::Air; size as usize]; size as usize];
     for rect in &rects {
         draw_rect(rect, &mut room);
     }
