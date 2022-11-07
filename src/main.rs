@@ -4,10 +4,11 @@ mod camera;
 mod scenes;
 mod util;
 
-use crate::scenes::game::GAME;
-use crate::scenes::object::Object;
 use macroquad::prelude::{next_frame, Conf};
 use scenes::room_gen::gen::init_rooms;
+
+use crate::scenes::game::GAME;
+use crate::scenes::object::Object;
 
 fn config() -> Conf {
     Conf {

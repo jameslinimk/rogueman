@@ -1,9 +1,10 @@
-use crate::{
-    game_remove,
-    scenes::{game::GAME, object::obj_id, objects::shapes::rect::Rect},
-    util::{angle, project, DAMAGE_COOLDOWN},
-};
 use macroquad::prelude::{get_frame_time, get_time, RED};
+
+use crate::game_remove;
+use crate::scenes::game::GAME;
+use crate::scenes::object::obj_id;
+use crate::scenes::objects::shapes::rect::Rect;
+use crate::util::{angle, project, DAMAGE_COOLDOWN};
 
 pub struct Enemy {
     pub rect: Rect,

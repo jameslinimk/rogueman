@@ -1,3 +1,6 @@
+use macroquad::prelude::rand::ChooseRandom;
+use macroquad::prelude::{clear_background, WHITE};
+
 use super::object::IDObject;
 use super::objects::assets::load_image;
 use super::objects::enemies::enemy::Enemy;
@@ -10,7 +13,6 @@ use crate::camera::Camera;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::util::hex;
 use crate::{pub_global_variable, repeat_for_vec, repeat_function, Object};
-use macroquad::prelude::{clear_background, rand::ChooseRandom, WHITE};
 
 pub_global_variable!(GAME, _GAME, GameScene);
 

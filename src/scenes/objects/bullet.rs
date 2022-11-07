@@ -1,15 +1,11 @@
-use macroquad::prelude::{get_frame_time, get_time, rand::gen_range, Vec2, YELLOW};
-
-use crate::{
-    game_remove,
-    scenes::{
-        game::GAME,
-        object::{obj_id, IDObject},
-    },
-    util::{deg_to_rad, project},
-};
+use macroquad::prelude::rand::gen_range;
+use macroquad::prelude::{get_frame_time, get_time, Vec2, YELLOW};
 
 use super::shapes::rect::Rect;
+use crate::game_remove;
+use crate::scenes::game::GAME;
+use crate::scenes::object::{obj_id, IDObject};
+use crate::util::{deg_to_rad, project};
 
 #[derive(Debug, Clone, Copy)]
 pub struct BulletConfig {

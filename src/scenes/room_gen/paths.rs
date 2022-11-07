@@ -1,9 +1,11 @@
-use super::gen::Objects;
-use crate::scenes::objects::shapes::rect::Rect;
-use macroquad::prelude::vec2;
-use maplit::hashmap;
 use std::collections::hash_map::Entry::Vacant;
 use std::collections::HashMap;
+
+use macroquad::prelude::vec2;
+use maplit::hashmap;
+
+use super::gen::Objects;
+use crate::scenes::objects::shapes::rect::Rect;
 
 type AdjacentRects = HashMap<usize, Vec<(usize, (i32, i32))>>;
 fn adjacent_rects(rects: &[Rect], size: usize) -> AdjacentRects {

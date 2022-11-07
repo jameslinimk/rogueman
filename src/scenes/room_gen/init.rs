@@ -1,9 +1,8 @@
-use super::{
-    gen::{Direction, Objects, SplitQueue},
-    util::pop_random,
-};
-use crate::tuple_abs_diff;
 use macroquad::rand::gen_range;
+
+use super::gen::{Direction, Objects, SplitQueue};
+use super::util::pop_random;
+use crate::tuple_abs_diff;
 
 pub fn init_rects(size: usize, split_limit: usize) -> Vec<Vec<Objects>> {
     let mut room = vec![vec![Objects::Air; size as usize]; size as usize];

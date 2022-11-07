@@ -1,12 +1,13 @@
 use std::collections::HashMap;
+use std::f32::consts::PI;
+
+use lazy_static::lazy_static;
+use macroquad::prelude::{get_frame_time, get_time, is_key_down, is_key_pressed, vec2, KeyCode};
+use maplit::hashmap;
 
 use super::main::Player;
 use crate::scenes::game::GAME;
 use crate::util::project;
-use lazy_static::lazy_static;
-use macroquad::prelude::{get_frame_time, get_time, is_key_down, is_key_pressed, vec2, KeyCode};
-use maplit::hashmap;
-use std::f32::consts::PI;
 
 lazy_static! {
     static ref ROLL_ANGLES: HashMap<String, f32> = hashmap! {

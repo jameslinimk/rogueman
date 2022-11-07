@@ -1,6 +1,7 @@
+use macroquad::prelude::{draw_line, vec2, Color, Vec2};
+
 use super::rect::Rect;
 use crate::util::distance;
-use macroquad::prelude::{draw_line, vec2, Color, Vec2};
 
 pub fn polygons_intersect(polygons: &[Vec<Vec2>; 2]) -> bool {
     for polygon in polygons {

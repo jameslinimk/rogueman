@@ -1,7 +1,9 @@
+use std::collections::HashSet;
+
+use macroquad::prelude::rand::gen_range;
+
 use super::gen::{Objects, SplitQueue};
 use crate::scenes::objects::shapes::rect::Rect;
-use macroquad::prelude::rand::gen_range;
-use std::collections::HashSet;
 
 pub fn print_room(rooms: &Vec<Vec<Objects>>) {
     for row in rooms {

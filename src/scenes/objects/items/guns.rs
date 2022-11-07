@@ -1,6 +1,6 @@
-use crate::{camera::ShakeConfig, scenes::objects::bullet::BulletConfig};
-
 use super::item::Rarities;
+use crate::camera::ShakeConfig;
+use crate::scenes::objects::bullet::BulletConfig;
 
 #[derive(Debug, Clone, Copy)]
 pub struct Gun {

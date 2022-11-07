@@ -1,10 +1,9 @@
-use super::shapes::rect::Rect;
-use crate::{
-    scenes::object::{obj_id, IDObject},
-    util::rel_mouse_pos,
-};
 use derive_new::new;
 use macroquad::prelude::{RED, YELLOW};
+
+use super::shapes::rect::Rect;
+use crate::scenes::object::{obj_id, IDObject};
+use crate::util::rel_mouse_pos;
 
 #[derive(new)]
 pub struct TestObj {

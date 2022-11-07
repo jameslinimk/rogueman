@@ -1,3 +1,6 @@
+use derive_new::new;
+use macroquad::prelude::{draw_rectangle, draw_texture, get_time, screen_height, Color, WHITE};
+
 use crate::scenes::objects::assets::get_image;
 use crate::scenes::objects::items::guns::{Gun, GUNS};
 use crate::scenes::objects::items::melee::{Melee, MELEES};
@@ -5,8 +8,6 @@ use crate::scenes::objects::shapes::line::Line;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::util::{multiline_text, rx_smooth, ry_smooth, DAMAGE_COOLDOWN};
 use crate::GAME;
-use derive_new::new;
-use macroquad::prelude::{draw_rectangle, draw_texture, get_time, screen_height, Color, WHITE};
 
 #[derive(Debug, new)]
 pub struct Player {

@@ -1,14 +1,14 @@
+use macroquad::prelude::{
+    get_time, is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, KeyCode, MouseButton,
+};
+
 use super::main::Player;
 use crate::scenes::game::GAME;
 use crate::scenes::objects::bullet::Bullet;
 use crate::scenes::objects::items::guns::Gun;
 use crate::scenes::objects::objects_enum::Objects;
 use crate::unwrap_or_return;
-use crate::util::angle;
-use crate::util::rel_mouse_pos;
-use macroquad::prelude::{
-    get_time, is_key_pressed, is_mouse_button_down, is_mouse_button_pressed, KeyCode, MouseButton,
-};
+use crate::util::{angle, rel_mouse_pos};
 
 impl Player {
     pub fn update_shoot(&mut self) {

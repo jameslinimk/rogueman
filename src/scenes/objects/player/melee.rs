@@ -1,13 +1,10 @@
+use macroquad::prelude::{get_time, is_key_pressed, is_mouse_button_pressed, MouseButton, YELLOW};
+
 use super::main::Player;
 use crate::scenes::objects::items::melee::Melee;
 use crate::scenes::objects::shapes::line::Line;
-use crate::unwrap_or_return;
-use crate::util::angle;
-use crate::util::project;
-use crate::util::rel_mouse_pos;
-use crate::util::NUMBER_KEYS;
-use crate::GAME;
-use macroquad::prelude::{get_time, is_key_pressed, is_mouse_button_pressed, MouseButton, YELLOW};
+use crate::util::{angle, project, rel_mouse_pos, NUMBER_KEYS};
+use crate::{unwrap_or_return, GAME};
 
 impl Player {
     pub fn update_melee(&mut self) {

@@ -1,17 +1,16 @@
-use crate::scenes::{
-    objects::shapes::rect::Rect,
-    room_gen::{
-        init::init_rects,
-        util::{draw_rect, find_rect, point_valid, rand_rect},
-    },
-};
+use std::collections::HashMap;
+use std::sync::Mutex;
+
 use derive_new::new;
 use lazy_static::lazy_static;
 use macroquad::prelude::load_string;
 use maplit::{hashmap, hashset};
-use std::{collections::HashMap, sync::Mutex};
 
-use super::{paths::paths, util::print_room};
+use super::paths::paths;
+use super::util::print_room;
+use crate::scenes::objects::shapes::rect::Rect;
+use crate::scenes::room_gen::init::init_rects;
+use crate::scenes::room_gen::util::{draw_rect, find_rect, point_valid, rand_rect};
 
 #[derive(Clone, Copy, Debug)]
 pub enum Objects {
