@@ -45,6 +45,7 @@ impl GameScene {
         for gun in GUNS {
             load_image(gun.image_file).await;
         }
+        self.player.init().await;
     }
 }
 impl Object for GameScene {
@@ -56,10 +57,10 @@ impl Object for GameScene {
     fn draw(&mut self) {
         clear_background(hex("#313639"));
 
-        repeat_function!(draw, self.player);
-        repeat_for_vec!(draw, self.objects, self.enemies);
         for wall in &mut self.walls {
             wall.draw(WHITE)
         }
+        repeat_for_vec!(draw, self.objects, self.enemies);
+        repeat_function!(draw, self.player);
     }
 }

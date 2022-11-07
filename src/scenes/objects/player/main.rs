@@ -1,7 +1,7 @@
 use derive_new::new;
 use macroquad::prelude::{draw_rectangle, draw_texture, get_time, screen_height, Color, WHITE};
 
-use crate::scenes::objects::assets::get_image;
+use crate::scenes::objects::assets::{get_image, load_image};
 use crate::scenes::objects::items::guns::{Gun, GUNS};
 use crate::scenes::objects::items::melee::{Melee, MELEES};
 use crate::scenes::objects::shapes::line::Line;
@@ -54,6 +54,10 @@ pub struct Player {
     pub roll_speed: f32,
 }
 impl Player {
+    pub async fn init(&self) {
+        load_image("path").await;
+    }
+
     pub fn update(&mut self) {
         self.update_movement();
         self.update_shoot();

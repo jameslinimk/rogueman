@@ -9,7 +9,7 @@ lazy_static! {
     static ref ASSET_MAP: Mutex<HashMap<&'static str, Texture2D>> = Mutex::new(hashmap!());
 }
 
-pub fn get_image(path: &str) -> Option<Texture2D> {
+pub fn get_image(path: &'static str) -> Option<Texture2D> {
     match ASSET_MAP.lock().unwrap().get(path) {
         Some(texture) => Option::from(texture.to_owned()),
         None => None,

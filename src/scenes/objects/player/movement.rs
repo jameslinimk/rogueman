@@ -80,7 +80,6 @@ impl Player {
 
     fn rolling(&mut self, vspd: &mut f32, hspd: &mut f32) {
         let mut rolling = get_time() <= self.last_roll + self.roll_duration as f64;
-        self.invulnerable = rolling;
         let on_cooldown =
             get_time() <= self.last_roll + self.roll_duration as f64 + self.roll_cooldown as f64;
 

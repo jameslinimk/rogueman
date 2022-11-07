@@ -2,6 +2,7 @@
 
 mod camera;
 mod scenes;
+mod spritesheet;
 mod util;
 
 use macroquad::prelude::{next_frame, Conf};

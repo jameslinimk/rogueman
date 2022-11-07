@@ -13,6 +13,7 @@
 		"powf",
 		"rects",
 		"rustfmt",
+		"spritesheet",
 		"trunc",
 		"vspd"
 	]
