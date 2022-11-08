@@ -4,13 +4,13 @@ use derive_new::new;
 use macroquad::prelude::{draw_rectangle, draw_texture, get_time, screen_height, Color, WHITE};
 use maplit::hashmap;
 
-use crate::scenes::objects::assets::{get_image, load_image};
+use crate::scenes::objects::assets::{get_image, get_image_owned, load_image, load_image_owned};
 use crate::scenes::objects::items::guns::{Gun, GUNS};
 use crate::scenes::objects::items::melee::{Melee, MELEES};
 use crate::scenes::objects::shapes::line::Line;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::spritesheet::SpriteSheet;
-use crate::util::{multiline_text, rx_smooth, ry_smooth, DAMAGE_COOLDOWN, DIRECTIONS};
+use crate::util::{multiline_text, rx_smooth, ry_smooth, Direction, DAMAGE_COOLDOWN, DIRECTIONS};
 use crate::{repeat_function, GAME};
 
 #[derive(Debug, new)]
@@ -27,6 +27,13 @@ pub struct Player {
     pub last_damage: f64,
     #[new(value = "false")]
     pub invulnerable: bool,
+
+    #[new(value = "0.0")]
+    pub hspd: f32,
+    #[new(value = "0.0")]
+    pub vspd: f32,
+    #[new(value = "Direction::S")]
+    pub direction: Direction,
 
     #[new(value = "GUNS.to_vec()")]
     pub guns: Vec<Gun>,
@@ -46,6 +53,8 @@ pub struct Player {
     #[new(value = "None")]
     pub last_melee_line: Option<Line>,
 
+    #[new(value = "false")]
+    pub rolling: bool,
     #[new(value = "f64::MIN")]
     pub last_roll: f64,
     #[new(value = "0.1")]
@@ -57,32 +66,59 @@ pub struct Player {
     #[new(value = "1600.0")]
     pub roll_speed: f32,
 
-    #[new(value = "hashmap! {
-        \"w\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_w.png\"), 4, 0.1),
-        \"a\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_a.png\"), 4, 0.1),
-        \"s\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_s.png\"), 4, 0.1),
-        \"d\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_d.png\"), 4, 0.1),
-        \"wa\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_wa.png\"), 4, 0.1),
-        \"wd\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_wd.png\"), 4, 0.1),
-        \"sa\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_sa.png\"), 4, 0.1),
-        \"sd\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_sd.png\"), 4, 0.1),
+    #[new(value = "{
+        let mut temp_map = hashmap! {};
+        for dir in &DIRECTIONS {
+            temp_map.insert(
+                dir.0,
+                SpriteSheet::new(
+                    get_image_owned(format!(\"./assets/player/movement/move_{}.png\", dir.1)),
+                    4,
+                    0.1
+                ),
+            );
+        }
+        temp_map
     }")]
-    pub move_spritesheets: HashMap<&'static str, SpriteSheet>,
+    pub move_spritesheets: HashMap<Direction, SpriteSheet>,
+    #[new(value = "{
+        let mut temp_map = hashmap! {};
+        for dir in &DIRECTIONS {
+            temp_map.insert(
+                dir.0,
+                SpriteSheet::new(
+                    get_image_owned(format!(\"./assets/player/movement/roll_{}.png\", dir.1)),
+                    4,
+                    0.1
+                ),
+            );
+        }
+        temp_map
+    }")]
+    pub roll_spritesheets: HashMap<Direction, SpriteSheet>,
 }
 impl Player {
     pub async fn init() {
-        // TODO
-        // for dir in &DIRECTIONS {
-        //     load_image(&format!("./assets/player/movement/move_{}.png", dir)).await;
-        // }
+        for (_, dir) in &DIRECTIONS {
+            load_image_owned(format!("./assets/player/movement/move_{}.png", dir)).await;
+            load_image_owned(format!("./assets/player/movement/roll_{}.png", dir)).await;
+        }
     }
 
     pub fn update(&mut self) {
         self.update_movement();
         self.update_shoot();
         self.update_melee();
-        for dir in &DIRECTIONS {
-            self.move_spritesheets.get_mut(dir).unwrap().update();
+
+        self.move_spritesheets
+            .get_mut(&self.direction)
+            .unwrap()
+            .update();
+        if self.rolling {
+            self.roll_spritesheets
+                .get_mut(&self.direction)
+                .unwrap()
+                .update();
         }
 
         GAME().camera.target = self.rect.get_center();
@@ -92,11 +128,19 @@ impl Player {
         self.rect.draw(WHITE);
         let center = self.rect.get_center();
 
-        for dir in &DIRECTIONS {
-            self.move_spritesheets
-                .get(dir)
-                .unwrap()
-                .draw(center.x - 32.0, center.y - 32.0, 64.0);
+        // TODO Match rolling animation speed with rolling speed
+        if self.rolling {
+            self.roll_spritesheets.get(&self.direction).unwrap().draw(
+                center.x - 32.0,
+                center.y - 32.0,
+                64.0,
+            );
+        } else {
+            self.move_spritesheets.get(&self.direction).unwrap().draw(
+                center.x - 32.0,
+                center.y - 32.0,
+                64.0,
+            );
         }
 
         self.draw_melee();
