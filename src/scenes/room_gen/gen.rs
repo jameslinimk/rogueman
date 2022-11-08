@@ -7,6 +7,7 @@ use macroquad::prelude::load_string;
 use maplit::{hashmap, hashset};
 
 use super::paths::paths;
+use super::post::post;
 use super::util::print_room;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::scenes::room_gen::init::init_rects;
@@ -59,6 +60,7 @@ pub fn generate_room() -> Vec<Vec<Objects>> {
     let size = 100;
     let split_limit = size / 3;
 
+    /* ------------------------------- Init rects ------------------------------- */
     let mut room = init_rects(size, split_limit);
 
     /* -------------------------- Detecting rectangles -------------------------- */
@@ -87,8 +89,9 @@ pub fn generate_room() -> Vec<Vec<Objects>> {
         draw_rect(rect, &mut room);
     }
 
-    /* -------------------------------- Pathways -------------------------------- */
-    paths(&rects, size, &mut room);
+    /* ---------------------------- Pathways and post --------------------------- */
+    let doors = paths(&rects, size, &mut room);
+    post(&mut room, &rects, &doors);
 
     room
 }
