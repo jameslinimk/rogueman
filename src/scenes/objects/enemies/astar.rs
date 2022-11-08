@@ -109,7 +109,7 @@ fn test() {
         vec![Objects::Air, Objects::Wall, Objects::Air, Objects::Air],
         vec![Objects::Wall, Objects::Air, Objects::Air, Objects::Air],
         vec![Objects::Air, Objects::Air, Objects::Wall, Objects::Wall],
-        vec![Objects::Air, Objects::Air, Objects::Air, Objects::Air],
+        vec![Objects::Air, Objects::Air, Objects::Wall, Objects::Air],
     ];
     let goal = HashVec2::new(3, 3);
     let p = HashVec2::new(0, 0);

@@ -1,6 +1,7 @@
 use macroquad::prelude::rand::ChooseRandom;
 use macroquad::prelude::{clear_background, WHITE};
 
+use super::dungeon_manager::Manager;
 use super::object::IDObject;
 use super::objects::assets::load_image;
 use super::objects::enemies::enemy::Enemy;
@@ -8,7 +9,7 @@ use super::objects::items::guns::GUNS;
 use super::objects::objects_enum::Objects;
 use super::objects::player::main::Player;
 use super::objects::test::TestObj;
-use super::room_gen::gen::{load_room, Objects as RoomObjects, ROOMS};
+use super::room_gen::gen::{generate_room, load_walls, Objects as RoomObjects};
 use crate::camera::Camera;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::util::hex;
@@ -20,21 +21,20 @@ pub struct GameScene {
     pub player: Player,
     pub objects: Vec<Objects>,
     pub walls: Vec<Rect>,
-    pub room: Vec<Vec<RoomObjects>>,
+    pub manager: Manager,
     pub enemies: Vec<Enemy>,
     pub camera: Camera,
 }
 impl GameScene {
     pub fn new() -> GameScene {
-        let rooms = ROOMS.lock().unwrap();
-        let rand_room = rooms.choose().unwrap();
-
+        let room = generate_room();
         GameScene {
             player: Player::new(),
             objects: vec![Objects::from(TestObj::new())],
-            // objects: vec![],
-            room: rand_room.to_vec(),
-            walls: load_room(rand_room),
+            manager: Manager {
+                room: room.to_vec(),
+            },
+            walls: load_walls(&room),
             enemies: vec![Enemy::new(200.0, 200.0, 10.0)],
             camera: Camera::new(),
         }
@@ -57,10 +57,11 @@ impl Object for GameScene {
     fn draw(&mut self) {
         clear_background(hex("#313639"));
 
+        repeat_function!(draw, self.player);
         for wall in &mut self.walls {
             wall.draw(WHITE)
         }
         repeat_for_vec!(draw, self.objects, self.enemies);
-        repeat_function!(draw, self.player);
+        self.player.draw_ui();
     }
 }

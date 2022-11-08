@@ -96,21 +96,29 @@ impl Player {
     }
 
     fn update_direction(&mut self) {
+        macro_rules! return_direction {
+            ($direction: expr) => {{
+                self.move_spritesheets
+                    .get_mut(&$direction)
+                    .unwrap()
+                    .resume();
+                $direction
+            }};
+        }
+
         self.direction = match ((self.hspd as i32).signum(), (self.vspd as i32).signum()) {
-            (1, 0) => Direction::D,
-            (-1, 0) => Direction::A,
-            (0, 1) => Direction::S,
-            (0, -1) => Direction::W,
-            (1, 1) => Direction::SD,
-            (-1, 1) => Direction::SA,
-            (1, -1) => Direction::WD,
-            (-1, -1) => Direction::WA,
+            (1, 0) => return_direction!(Direction::D),
+            (-1, 0) => return_direction!(Direction::A),
+            (0, 1) => return_direction!(Direction::S),
+            (0, -1) => return_direction!(Direction::W),
+            (1, 1) => return_direction!(Direction::SD),
+            (-1, 1) => return_direction!(Direction::SA),
+            (1, -1) => return_direction!(Direction::WD),
+            (-1, -1) => return_direction!(Direction::WA),
             (0, 0) => {
                 let sheet = self.move_spritesheets.get_mut(&self.direction).unwrap();
+                sheet.current_frame = 0;
                 sheet.pause();
-                sheet.current_frame = 1;
-
-                // TODO Find out why current_frame of 1 is the first frame, not 0
 
                 self.direction
             }

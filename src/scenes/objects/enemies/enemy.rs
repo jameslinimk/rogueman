@@ -4,7 +4,7 @@ use crate::game_remove;
 use crate::scenes::game::GAME;
 use crate::scenes::object::obj_id;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::{angle, project, DAMAGE_COOLDOWN};
+use crate::util::{angle, project, DAMAGE_COOLDOWN, SQUARE_SIZE};
 
 pub struct Enemy {
     pub rect: Rect,
@@ -17,7 +17,7 @@ pub struct Enemy {
 impl Enemy {
     pub fn new(x: f32, y: f32, max_health: f32) -> Enemy {
         Enemy {
-            rect: Rect::new_center(x, y, 30.0, 30.0),
+            rect: Rect::new_center(x, y, SQUARE_SIZE, SQUARE_SIZE),
             speed: 100.0,
             max_health,
             health: max_health,

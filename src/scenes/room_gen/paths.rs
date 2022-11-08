@@ -72,6 +72,7 @@ pub fn paths(rects: &[Rect], size: usize, room: &mut [Vec<Objects>]) {
     let half_path_size = path_size / 2 + 1;
 
     let adjacents = adjacent_rects(rects, size);
+    // let doors = hashmap! {};
     for (rect_index, rs) in &adjacents {
         let rect = rects[*rect_index];
         for (r_index, dir) in rs {
@@ -171,6 +172,20 @@ pub fn paths(rects: &[Rect], size: usize, room: &mut [Vec<Objects>]) {
 
                 pos.0 += dir.0;
                 pos.1 += dir.1;
+            }
+
+            /* ------------------------------ Getting doors ----------------------------- */
+            match dir {
+                (1, 0) | (-1, 0) => {
+                    // let mut door_rects = vec![];
+
+                    // TODO here
+                    for i in 0..path_size {
+                        room[end.1 as usize][end.0 as usize - half_path_size + i] = Objects::Air;
+                    }
+                }
+                (0, 1) | (0, -1) => {}
+                _ => panic!(),
             }
         }
     }

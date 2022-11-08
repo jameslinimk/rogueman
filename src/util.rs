@@ -20,7 +20,6 @@ pub enum Direction {
     SA,
     SD,
 }
-
 pub const DIRECTIONS: [(Direction, &str); 8] = [
     (Direction::W, "w"),
     (Direction::A, "a"),
@@ -31,6 +30,7 @@ pub const DIRECTIONS: [(Direction, &str); 8] = [
     (Direction::SA, "sa"),
     (Direction::SD, "sd"),
 ];
+pub const SQUARE_SIZE: f32 = 30.0;
 
 /// It takes two points, and returns the angle between them
 pub fn angle(origin: Vec2, dest: Vec2) -> f32 {

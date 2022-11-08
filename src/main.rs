@@ -7,7 +7,6 @@ mod util;
 
 use macroquad::prelude::{next_frame, Conf};
 use scenes::game::GameScene;
-use scenes::room_gen::gen::init_rooms;
 
 use crate::scenes::game::GAME;
 use crate::scenes::object::Object;
@@ -24,7 +23,6 @@ fn config() -> Conf {
 
 #[macroquad::main(config)]
 async fn main() {
-    init_rooms().await;
     GameScene::init().await;
 
     loop {

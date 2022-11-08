@@ -45,10 +45,12 @@ impl SpriteSheet {
     }
 
     pub fn pause(&mut self) {
-        self.last_frame = f64::MIN;
+        self.last_frame = f64::MAX;
     }
 
     pub fn resume(&mut self) {
-        self.last_frame = get_time();
+        if self.last_frame == f64::MAX {
+            self.last_frame = get_time();
+        }
     }
 }

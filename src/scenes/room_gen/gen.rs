@@ -11,6 +11,7 @@ use super::util::print_room;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::scenes::room_gen::init::init_rects;
 use crate::scenes::room_gen::util::{draw_rect, find_rect, point_valid, rand_rect};
+use crate::util::SQUARE_SIZE;
 
 #[derive(Clone, Copy, Debug)]
 pub enum Objects {
@@ -18,34 +19,7 @@ pub enum Objects {
     Wall,
 }
 
-lazy_static! {
-    static ref OBJECT_KEYS: HashMap<&'static str, Objects> = hashmap! {
-        " " => Objects::Air,
-        "#" => Objects::Wall,
-    };
-    pub static ref ROOMS: Mutex<Vec<Vec<Vec<Objects>>>> = Mutex::new(vec![]);
-}
-
-pub async fn init_rooms() {
-    let txt = load_string("./assets/rooms.txt").await.unwrap();
-    for room in txt.split("\n\n") {
-        let mut data: Vec<Vec<Objects>> = vec![];
-        for line in room.lines() {
-            let mut line_vec: Vec<Objects> = vec![];
-            for char in line.split("") {
-                let obj = OBJECT_KEYS.get(char);
-                if obj.is_none() {
-                    continue;
-                }
-                line_vec.push(*obj.unwrap());
-            }
-            data.push(line_vec);
-        }
-        ROOMS.lock().unwrap().push(data);
-    }
-}
-
-pub fn load_room(room: &[Vec<Objects>]) -> Vec<Rect> {
+pub fn load_walls(room: &[Vec<Objects>]) -> Vec<Rect> {
     let mut walls: Vec<Rect> = vec![];
 
     for (y, line) in room.iter().enumerate() {
@@ -53,7 +27,12 @@ pub fn load_room(room: &[Vec<Objects>]) -> Vec<Rect> {
             match obj {
                 Objects::Air => {}
                 Objects::Wall => {
-                    walls.push(Rect::new(x as f32 * 30.0, y as f32 * 30.0, 30.0, 30.0));
+                    walls.push(Rect::new(
+                        x as f32 * SQUARE_SIZE,
+                        y as f32 * SQUARE_SIZE,
+                        SQUARE_SIZE,
+                        SQUARE_SIZE,
+                    ));
                 }
             }
         }
@@ -76,7 +55,7 @@ pub struct SplitQueue {
     pub y_limits: (usize, usize),
 }
 
-fn generate_room() -> Vec<Vec<Objects>> {
+pub fn generate_room() -> Vec<Vec<Objects>> {
     let size = 100;
     let split_limit = size / 3;
 

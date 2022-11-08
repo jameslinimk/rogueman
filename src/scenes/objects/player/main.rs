@@ -10,12 +10,14 @@ use crate::scenes::objects::items::melee::{Melee, MELEES};
 use crate::scenes::objects::shapes::line::Line;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::spritesheet::SpriteSheet;
-use crate::util::{multiline_text, rx_smooth, ry_smooth, Direction, DAMAGE_COOLDOWN, DIRECTIONS};
+use crate::util::{
+    multiline_text, rx_smooth, ry_smooth, Direction, DAMAGE_COOLDOWN, DIRECTIONS, SQUARE_SIZE,
+};
 use crate::{repeat_function, GAME};
 
 #[derive(Debug, new)]
 pub struct Player {
-    #[new(value = "Rect::new_center(-100.0, -100.0, 30.0, 30.0)")]
+    #[new(value = "Rect::new_center(-100.0, -100.0, SQUARE_SIZE, SQUARE_SIZE)")]
     pub rect: Rect,
     #[new(value = "500.0")]
     pub speed: f32,
@@ -83,13 +85,18 @@ pub struct Player {
     pub move_spritesheets: HashMap<Direction, SpriteSheet>,
     #[new(value = "{
         let mut temp_map = hashmap! {};
+
+        // Sync this with line 60
+        let roll_duration = 0.1;
+        let width = 4;
+
         for dir in &DIRECTIONS {
             temp_map.insert(
                 dir.0,
                 SpriteSheet::new(
                     get_image_owned(format!(\"./assets/player/movement/roll_{}.png\", dir.1)),
-                    4,
-                    0.1
+                    width,
+                    roll_duration / width as f32
                 ),
             );
         }
@@ -110,6 +117,7 @@ impl Player {
         self.update_shoot();
         self.update_melee();
 
+        /* ----------------------------- Drawing sprite ----------------------------- */
         self.move_spritesheets
             .get_mut(&self.direction)
             .unwrap()
@@ -125,10 +133,9 @@ impl Player {
     }
 
     pub fn draw(&mut self) {
-        self.rect.draw(WHITE);
         let center = self.rect.get_center();
 
-        // TODO Match rolling animation speed with rolling speed
+        /* ----------------------------- Drawing sprite ----------------------------- */
         if self.rolling {
             self.roll_spritesheets.get(&self.direction).unwrap().draw(
                 center.x - 32.0,
@@ -144,10 +151,9 @@ impl Player {
         }
 
         self.draw_melee();
-        self.draw_ui();
     }
 
-    fn draw_ui(&self) {
+    pub fn draw_ui(&self) {
         /* ------------------------------- Debug Menu ------------------------------- */
         let gun = self.get_gun();
         let melee = self.get_melee();
