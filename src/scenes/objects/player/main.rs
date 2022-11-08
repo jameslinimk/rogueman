@@ -1,5 +1,8 @@
+use std::collections::HashMap;
+
 use derive_new::new;
 use macroquad::prelude::{draw_rectangle, draw_texture, get_time, screen_height, Color, WHITE};
+use maplit::hashmap;
 
 use crate::scenes::objects::assets::{get_image, load_image};
 use crate::scenes::objects::items::guns::{Gun, GUNS};
@@ -7,7 +10,7 @@ use crate::scenes::objects::items::melee::{Melee, MELEES};
 use crate::scenes::objects::shapes::line::Line;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::spritesheet::SpriteSheet;
-use crate::util::{multiline_text, rx_smooth, ry_smooth, DAMAGE_COOLDOWN};
+use crate::util::{multiline_text, rx_smooth, ry_smooth, DAMAGE_COOLDOWN, DIRECTIONS};
 use crate::{repeat_function, GAME};
 
 #[derive(Debug, new)]
@@ -54,19 +57,33 @@ pub struct Player {
     #[new(value = "1600.0")]
     pub roll_speed: f32,
 
-    #[new(value = "SpriteSheet::new(get_image(\"./assets/player/movement/move_a.png\"), 4, 0.1)")]
-    pub move_a: SpriteSheet,
+    #[new(value = "hashmap! {
+        \"w\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_w.png\"), 4, 0.1),
+        \"a\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_a.png\"), 4, 0.1),
+        \"s\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_s.png\"), 4, 0.1),
+        \"d\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_d.png\"), 4, 0.1),
+        \"wa\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_wa.png\"), 4, 0.1),
+        \"wd\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_wd.png\"), 4, 0.1),
+        \"sa\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_sa.png\"), 4, 0.1),
+        \"sd\" => SpriteSheet::new(get_image(\"./assets/player/movement/move_sd.png\"), 4, 0.1),
+    }")]
+    pub move_spritesheets: HashMap<&'static str, SpriteSheet>,
 }
 impl Player {
     pub async fn init() {
-        load_image("./assets/player/movement/move_a.png").await;
+        // TODO
+        // for dir in &DIRECTIONS {
+        //     load_image(&format!("./assets/player/movement/move_{}.png", dir)).await;
+        // }
     }
 
     pub fn update(&mut self) {
         self.update_movement();
         self.update_shoot();
         self.update_melee();
-        repeat_function!(update, self.move_a);
+        for dir in &DIRECTIONS {
+            self.move_spritesheets.get_mut(dir).unwrap().update();
+        }
 
         GAME().camera.target = self.rect.get_center();
     }
@@ -74,7 +91,13 @@ impl Player {
     pub fn draw(&mut self) {
         self.rect.draw(WHITE);
         let center = self.rect.get_center();
-        self.move_a.draw(center.x - 32.0, center.y - 32.0, 64.0);
+
+        for dir in &DIRECTIONS {
+            self.move_spritesheets
+                .get(dir)
+                .unwrap()
+                .draw(center.x - 32.0, center.y - 32.0, 64.0);
+        }
 
         self.draw_melee();
         self.draw_ui();
