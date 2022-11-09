@@ -1,6 +1,5 @@
 use macroquad::prelude::{get_frame_time, get_time, RED};
 
-use crate::game_remove;
 use crate::scenes::game::GAME;
 use crate::scenes::object::obj_id;
 use crate::scenes::objects::shapes::rect::Rect;
@@ -50,7 +49,7 @@ impl Enemy {
         self.last_damage = get_time();
         self.health -= damage;
         if self.health < 0.0 {
-            game_remove!(GAME().enemies, self.id);
+            GAME().remove_enemy(self.id);
         }
         true
     }

@@ -47,6 +47,24 @@ impl GameScene {
         }
         Player::init().await;
     }
+
+    pub fn remove_object(&mut self, id: u32) {
+        match self.objects.iter().position(|x| x.get_id() == id) {
+            Some(index) => {
+                self.objects.remove(index);
+            }
+            None => {}
+        };
+    }
+
+    pub fn remove_enemy(&mut self, id: u32) {
+        match self.enemies.iter().position(|x| x.get_id() == id) {
+            Some(index) => {
+                self.enemies.remove(index);
+            }
+            None => {}
+        };
+    }
 }
 impl Object for GameScene {
     fn update(&mut self) {

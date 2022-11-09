@@ -2,7 +2,6 @@ use macroquad::prelude::rand::gen_range;
 use macroquad::prelude::{get_frame_time, get_time, Vec2, YELLOW};
 
 use super::shapes::rect::Rect;
-use crate::game_remove;
 use crate::scenes::game::GAME;
 use crate::scenes::object::{obj_id, IDObject};
 use crate::util::{deg_to_rad, project};
@@ -51,7 +50,7 @@ impl Bullet {
     fn update_collision(&mut self) {
         for wall in &mut GAME().walls {
             if self.rect.touches_rect(wall) {
-                game_remove!(GAME().objects, self.id);
+                GAME().remove_object(self.id);
                 return;
             }
         }
@@ -64,7 +63,7 @@ impl Bullet {
                     if success {
                         self.traveled_through += 1;
                         if self.traveled_through > self.config.pierce {
-                            game_remove!(GAME().objects, self.id);
+                            GAME().remove_object(self.id);
                             return;
                         }
                     }
@@ -76,7 +75,7 @@ impl Bullet {
             if success {
                 self.traveled_through += 1;
                 if self.traveled_through > self.config.pierce {
-                    game_remove!(GAME().objects, self.id);
+                    GAME().remove_object(self.id);
                 }
             }
         }
@@ -85,7 +84,7 @@ impl Bullet {
 impl IDObject for Bullet {
     fn update(&mut self) {
         if get_time() > self.created + self.config.max_lifespan as f64 {
-            game_remove!(GAME().objects, self.id);
+            GAME().remove_object(self.id);
         }
 
         self.rect.set_center_vec(project(
