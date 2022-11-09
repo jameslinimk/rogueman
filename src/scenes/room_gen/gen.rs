@@ -99,5 +99,5 @@ pub fn generate_room() -> Vec<Vec<Objects>> {
 #[test]
 fn test() {
     let room = generate_room();
-    print_room(&room);
+    // print_room(&room);
 }

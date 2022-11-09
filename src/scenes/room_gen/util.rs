@@ -1,11 +1,12 @@
 use std::collections::HashSet;
+use std::fmt::Debug;
 
 use macroquad::prelude::rand::gen_range;
 
 use super::gen::{Objects, SplitQueue};
 use crate::scenes::objects::shapes::rect::Rect;
 
-pub fn print_room(rooms: &Vec<Vec<Objects>>) {
+pub fn print_room(rooms: &[Vec<Objects>]) {
     for row in rooms {
         for cell in row {
             let sym = match cell {
@@ -15,6 +16,23 @@ pub fn print_room(rooms: &Vec<Vec<Objects>>) {
             print!("{}", sym);
         }
         println!();
+    }
+}
+
+pub fn rotate_array<T>(mat: &mut [Vec<T>])
+where
+    T: Copy,
+{
+    for i in mat.iter_mut() {
+        i.reverse();
+    }
+
+    for y in 0..mat.len() {
+        for x in y..mat.len() {
+            let temp = mat[y][x];
+            mat[y][x] = mat[x][y];
+            mat[x][y] = temp;
+        }
     }
 }
 
