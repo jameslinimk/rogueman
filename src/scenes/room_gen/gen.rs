@@ -91,7 +91,7 @@ pub fn generate_room() -> Vec<Vec<Objects>> {
 
     /* ---------------------------- Pathways and post --------------------------- */
     let doors = paths(&rects, size, &mut room);
-    post(&mut room, &rects, &doors);
+    post(&mut room, &rects);
 
     room
 }

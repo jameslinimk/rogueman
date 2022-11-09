@@ -1,9 +1,11 @@
+use core::panic;
 use std::f32::consts::PI;
 
 use macroquad::prelude::{
     draw_text, draw_text_ex, measure_text, mouse_position, screen_height, screen_width, vec2,
     Color, KeyCode, TextParams, Vec2,
 };
+use macroquad::rand::gen_range;
 
 use crate::scenes::game::GAME;
 
@@ -209,4 +211,11 @@ pub fn hex(hex: &'static str) -> Color {
         u8::from_str_radix(&hex[5..7], 16).unwrap(),
         255,
     )
+}
+
+pub fn random_array<T>(array: &[T]) -> &T {
+    if array.is_empty() {
+        panic!("Array is empty");
+    }
+    &array[gen_range(0, array.len())]
 }
