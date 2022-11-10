@@ -14,7 +14,7 @@ use crate::scenes::room_gen::init::init_rects;
 use crate::scenes::room_gen::util::{draw_rect, find_rect, point_valid, rand_rect};
 use crate::util::SQUARE_SIZE;
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Objects {
     Air,
     Wall,
@@ -57,7 +57,7 @@ pub struct SplitQueue {
 }
 
 pub fn generate_room() -> Vec<Vec<Objects>> {
-    let size = 100;
+    let size = 200;
     let split_limit = size / 3;
 
     /* ------------------------------- Init rects ------------------------------- */
@@ -91,7 +91,7 @@ pub fn generate_room() -> Vec<Vec<Objects>> {
 
     /* ---------------------------- Pathways and post --------------------------- */
     let doors = paths(&rects, size, &mut room);
-    post(&mut room, &rects);
+    post(&mut room, &mut rects);
 
     room
 }
@@ -99,5 +99,5 @@ pub fn generate_room() -> Vec<Vec<Objects>> {
 #[test]
 fn test() {
     let room = generate_room();
-    // print_room(&room);
+    print_room(&room);
 }

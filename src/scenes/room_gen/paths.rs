@@ -68,7 +68,7 @@ fn adjacent_rects(rects: &[Rect], size: usize) -> AdjacentRects {
 }
 
 pub fn paths(rects: &[Rect], size: usize, room: &mut [Vec<Objects>]) -> Vec<(usize, usize)> {
-    let path_size = size / 30;
+    let path_size = size / 60;
     let half_path_size = path_size / 2 + 1;
 
     let mut doors = vec![];

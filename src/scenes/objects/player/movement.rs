@@ -79,19 +79,6 @@ impl Player {
         }
 
         /* ------------------------------ Set direction ----------------------------- */
-        let mut temp_direction = "".to_owned();
-        if self.vspd > 0.0 {
-            temp_direction += "s";
-        } else if self.vspd < 0.0 {
-            temp_direction += "w";
-        }
-
-        if self.hspd > 0.0 {
-            temp_direction += "d";
-        } else if self.hspd < 0.0 {
-            temp_direction += "a";
-        }
-
         self.update_direction();
     }
 
