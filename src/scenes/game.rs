@@ -27,14 +27,12 @@ pub struct GameScene {
 }
 impl GameScene {
     pub fn new() -> GameScene {
-        let room = generate_room();
+        let manager = generate_room();
         GameScene {
             player: Player::new(),
             objects: vec![Objects::from(TestObj::new())],
-            manager: Manager {
-                room: room.to_vec(),
-            },
-            walls: load_walls(&room),
+            manager: manager.clone(),
+            walls: load_walls(&manager.room),
             enemies: vec![Enemy::new(200.0, 200.0, 10.0)],
             camera: Camera::new(),
         }
@@ -49,21 +47,15 @@ impl GameScene {
     }
 
     pub fn remove_object(&mut self, id: u32) {
-        match self.objects.iter().position(|x| x.get_id() == id) {
-            Some(index) => {
-                self.objects.remove(index);
-            }
-            None => {}
-        };
+        if let Some(index) = self.objects.iter().position(|x| x.get_id() == id) {
+            self.objects.remove(index);
+        }
     }
 
     pub fn remove_enemy(&mut self, id: u32) {
-        match self.enemies.iter().position(|x| x.get_id() == id) {
-            Some(index) => {
-                self.enemies.remove(index);
-            }
-            None => {}
-        };
+        if let Some(index) = self.enemies.iter().position(|x| x.get_id() == id) {
+            self.enemies.remove(index);
+        }
     }
 }
 impl Object for GameScene {

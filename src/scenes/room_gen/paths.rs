@@ -8,9 +8,14 @@ use super::gen::Objects;
 use crate::scenes::objects::shapes::rect::Rect;
 
 type AdjacentRects = HashMap<usize, Vec<(usize, (i32, i32))>>;
-fn adjacent_rects(rects: &[Rect], size: usize) -> AdjacentRects {
+fn adjacent_rects(rects: &[Rect], size: usize, room: &mut [Vec<Objects>]) -> AdjacentRects {
+    // TODO make constant variables such as size, path_size, etc constants in util.rs
+    let path_size = size / 60;
+    let half_path_size = path_size / 2 + 1;
+
     let mut adjacent_rects: AdjacentRects = hashmap! {};
     for (rect_index, rect) in rects.iter().enumerate() {
+        println!("rect: {:?}", rect);
         let mut already_adjacent = vec![];
         for dir in &[(1, 0), (-1, 0), (0, 1), (0, -1)] {
             for i in 0..size / 2 {
@@ -35,7 +40,29 @@ fn adjacent_rects(rects: &[Rect], size: usize) -> AdjacentRects {
                     .position(|r| r.touches_point(&vec2(x as f32, y as f32)))
                 {
                     Some(rect) => rects[rect],
-                    None => continue,
+                    None => {
+                        match dir {
+                            (1, 0) | (-1, 0) => {
+                                if room[y as usize - half_path_size][x as usize] == Objects::Wall
+                                    || room[y as usize + half_path_size][x as usize]
+                                        == Objects::Wall
+                                {
+                                    break;
+                                }
+                            }
+                            (0, 1) | (0, -1) => {
+                                if room[y as usize][x as usize - half_path_size] == Objects::Wall
+                                    || room[y as usize][x as usize + half_path_size]
+                                        == Objects::Wall
+                                {
+                                    break;
+                                }
+                            }
+                            _ => panic!(),
+                        };
+
+                        continue;
+                    }
                 };
 
                 if rect != &r && rects.contains(&r) && !already_adjacent.contains(&r) {
@@ -62,6 +89,7 @@ fn adjacent_rects(rects: &[Rect], size: usize) -> AdjacentRects {
                 }
             }
         }
+        // break;
     }
 
     adjacent_rects
@@ -72,7 +100,7 @@ pub fn paths(rects: &[Rect], size: usize, room: &mut [Vec<Objects>]) -> Vec<(usi
     let half_path_size = path_size / 2 + 1;
 
     let mut doors = vec![];
-    let adjacents = adjacent_rects(rects, size);
+    let adjacents = adjacent_rects(rects, size, room);
     for (rect_index, rs) in &adjacents {
         let rect = rects[*rect_index];
         for (r_index, dir) in rs {

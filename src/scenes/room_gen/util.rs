@@ -1,5 +1,6 @@
 use std::collections::HashSet;
 use std::fmt::Debug;
+use std::mem::swap;
 
 use macroquad::prelude::rand::gen_range;
 
@@ -10,8 +11,8 @@ pub fn print_room(rooms: &[Vec<Objects>]) {
     for row in rooms {
         for cell in row {
             let sym = match cell {
-                Objects::Air => "⬜",
-                Objects::Wall => "⬛",
+                Objects::Air => " ",
+                Objects::Wall => "#",
             };
             print!("{}", sym);
         }
@@ -36,14 +37,12 @@ where
     }
 }
 
-pub fn pop_random(raw: &mut Vec<SplitQueue>) -> Option<SplitQueue> {
+pub fn pop_random<T>(raw: &mut Vec<T>) -> Option<T> {
     if raw.is_empty() {
         return None;
     }
     let i = gen_range(0, raw.len());
-    let copy = raw[i];
-    raw.remove(i);
-    Option::from(copy)
+    Option::from(raw.swap_remove(i))
 }
 
 #[macro_export]

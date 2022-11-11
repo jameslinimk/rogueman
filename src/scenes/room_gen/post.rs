@@ -60,10 +60,10 @@ lazy_static! {
     );
     static ref LARGE_OBJECTS: [Vec<Vec<Objects>>; 4] = objects!(
         5,
-        "
-         #
-         #  ##
-         ##  #
+        "##
+        
+            ##
+         #   #
          ##  #",
         "##  #
          0000#
@@ -72,10 +72,10 @@ lazy_static! {
          #   #",
         "##
          #   #
-         #   #
-         #
-         #    ",
-        "#####
+             #
+          
+         ##   ",
+        "#  ##
          #
          0000#
          000##
@@ -104,7 +104,7 @@ fn paste_object(
     for (obj_y, row) in object.iter().enumerate() {
         for (obj_x, cell) in row.iter().enumerate() {
             if cell == &Objects::Wall {
-                room[y + obj_y + y_offset][x + obj_x + x_offset] = Objects::Wall;
+                room[y + 1 + obj_y + y_offset][x + 1 + obj_x + x_offset] = Objects::Wall;
             }
         }
     }
@@ -120,7 +120,13 @@ fn test() {
 }
 
 fn gen_battle_room(room: &mut [Vec<Objects>], rect: &Rect) {
-    paste_object(1, 1, &complete_random(&*LARGE_OBJECTS), rect, room);
+    paste_object(0, 0, &complete_random(&*LARGE_OBJECTS), rect, room);
+}
+
+pub enum Room {
+    Start,
+    End,
+    Battle,
 }
 
 pub fn post(room: &mut [Vec<Objects>], rects: &mut [Rect]) {
