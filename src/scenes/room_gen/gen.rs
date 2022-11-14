@@ -9,6 +9,7 @@ use maplit::{hashmap, hashset};
 use super::paths::paths;
 use super::post::post;
 use super::util::print_room;
+use crate::scenes::dungeon_manager::Manager;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::scenes::room_gen::init::init_rects;
 use crate::scenes::room_gen::util::{draw_rect, find_rect, point_valid, rand_rect};
@@ -56,7 +57,7 @@ pub struct SplitQueue {
     pub y_limits: (usize, usize),
 }
 
-pub fn generate_room() -> Vec<Vec<Objects>> {
+pub fn generate_room() -> Manager {
     let size = 200;
     let split_limit = size / 3;
 
@@ -93,11 +94,11 @@ pub fn generate_room() -> Vec<Vec<Objects>> {
     let doors = paths(&rects, size, &mut room);
     post(&mut room, &mut rects);
 
-    room
+    Manager { room, doors }
 }
 
 #[test]
 fn test() {
     let room = generate_room();
-    print_room(&room);
+    print_room(&room.room);
 }
