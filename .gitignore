@@ -1,2 +1,7 @@
 /target
 .history
+
+# For server
+node_modules
+*.js
+*.js.map

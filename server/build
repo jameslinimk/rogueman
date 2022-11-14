@@ -1,0 +1,14 @@
+#!/bin/bash
+
+cd "$(dirname "$0")" || exit
+cd ../
+
+git pull
+
+rustup target add wasm32-unknown-unknown
+cargo build --target wasm32-unknown-unknown --release
+
+cd server || exit
+pnpm i
+tsc --watch false
+caffeinate node server.js
