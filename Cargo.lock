@@ -424,7 +424,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-game"
+name = "rogueman"
 version = "0.1.0"
 dependencies = [
  "derive-new",
