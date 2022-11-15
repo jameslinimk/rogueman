@@ -7,7 +7,7 @@
 		"@types/node": "^18.11.9"
 	},
 	"scripts": {
-		"serve": "ts-node server.ts"
+		"serve": "node --loader ts-node/esm server.ts"
 	},
 	"type": "module"
 }
