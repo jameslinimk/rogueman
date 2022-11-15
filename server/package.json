@@ -6,5 +6,8 @@
 		"@types/express": "^4.17.14",
 		"@types/node": "^18.11.9"
 	},
+	"scripts": {
+		"serve": "ts-node server.ts"
+	},
 	"type": "module"
 }

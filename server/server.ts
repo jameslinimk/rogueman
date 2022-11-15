@@ -1,20 +1,17 @@
-import express from "express";
-import { resolve } from "path";
+import express from "express"
 
-const port = 8604;
-const app = express();
+const port = 8604
+const app = express()
 
-app.use("/assets", express.static(resolve("../assets")));
+app.use("/assets", express.static("../assets"))
 app.get("/game.wasm", (_, res) => {
-    res.sendFile(
-        resolve("../target/wasm32-unknown-unknown/release/rust-game.wasm")
-    );
-});
+    res.sendFile("../target/wasm32-unknown-unknown/release/rogueman.wasm")
+})
 
 app.get("/", (_, res) => {
-    res.sendFile(resolve("static/index.html"));
-});
+    res.sendFile("static/index.html")
+})
 
 app.listen(port, () => {
-    console.log(`Listening at http://localhost:${port}`);
-});
+    console.log(`Listening at http://localhost:${port}`)
+})
