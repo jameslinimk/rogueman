@@ -19,6 +19,7 @@ pnpm i
 
 # Serve
 tmux kill-session -t $TMUX_NAME
-tmux new -d -s $TMUX_NAME "cd server && pnpm run serve"
+cd server || exit
+tmux new -d -s $TMUX_NAME "pnpm run serve"
 
 echo "Finished"
