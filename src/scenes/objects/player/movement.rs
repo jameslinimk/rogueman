@@ -8,20 +8,7 @@ use maplit::hashmap;
 use super::main::Player;
 use crate::scenes::game::GAME;
 use crate::scenes::objects::shapes::rect::Rect;
-use crate::util::{deg_to_rad, project, Direction};
-
-lazy_static! {
-    static ref ROLL_ANGLES: HashMap<Direction, f32> = hashmap! {
-        Direction::WA => deg_to_rad(225.0),
-        Direction::WD => deg_to_rad(315.0),
-        Direction::SD => deg_to_rad(45.0),
-        Direction::SA => deg_to_rad(135.0),
-        Direction::W => deg_to_rad(270.0),
-        Direction::S => deg_to_rad(90.0),
-        Direction::A => deg_to_rad(180.0),
-        Direction::D => deg_to_rad(0.0)
-    };
-}
+use crate::util::{deg_to_rad, project, Direction, ROLL_ANGLES};
 
 impl Player {
     pub fn update_movement(&mut self) {

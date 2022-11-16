@@ -3,7 +3,7 @@ use macroquad::prelude::{get_time, is_key_pressed, is_mouse_button_pressed, Mous
 use super::main::Player;
 use crate::scenes::objects::items::melee::Melee;
 use crate::scenes::objects::shapes::line::Line;
-use crate::util::{angle, project, rel_mouse_pos, NUMBER_KEYS};
+use crate::util::{angle, project, rel_mouse_pos, Direction, NUMBER_KEYS, ROLL_ANGLES};
 use crate::{unwrap_or_return, GAME};
 
 impl Player {
@@ -33,6 +33,20 @@ impl Player {
             ));
 
             self.last_melee = get_time();
+
+            // Calculate nearest direction of swing
+            let mut nearest_angle = 360.0;
+            let mut nearest_angle_direction = Direction::W;
+            for angle in ROLL_ANGLES.iter() {
+                let diff = (self.last_melee_angle.unwrap() - angle.1).abs();
+                if diff < nearest_angle {
+                    nearest_angle = diff;
+                    nearest_angle_direction = *angle.0;
+                }
+            }
+
+            println!("nearest_angle_index: {:?}", nearest_angle_direction);
+
             swinging = true;
         }
 
