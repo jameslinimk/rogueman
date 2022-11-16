@@ -13,7 +13,7 @@ use crate::scenes::object::Object;
 
 fn config() -> Conf {
     Conf {
-        window_title: "Rust game".to_owned(),
+        window_title: "Rogueman".to_owned(),
         window_width: 1280,
         window_height: 720,
         window_resizable: false,

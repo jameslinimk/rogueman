@@ -11,7 +11,8 @@ use crate::scenes::objects::shapes::line::Line;
 use crate::scenes::objects::shapes::rect::Rect;
 use crate::spritesheet::SpriteSheet;
 use crate::util::{
-    multiline_text, rx_smooth, ry_smooth, Direction, DAMAGE_COOLDOWN, DIRECTIONS, SQUARE_SIZE,
+    multiline_text, rx_smooth, ry_smooth, Direction, CARDINAL_DIRECTIONS, DAMAGE_COOLDOWN,
+    DIRECTIONS, SQUARE_SIZE,
 };
 use crate::{repeat_function, GAME};
 
@@ -88,27 +89,46 @@ pub struct Player {
 
         // Sync this with line 60
         let roll_duration = 0.1;
-        let width = 4;
 
         for dir in &DIRECTIONS {
             temp_map.insert(
                 dir.0,
                 SpriteSheet::new(
                     get_image_owned(format!(\"./assets/player/movement/roll_{}.png\", dir.1)),
-                    width,
-                    roll_duration / width as f32
+                    4,
+                    roll_duration / 4.0
                 ),
             );
         }
         temp_map
     }")]
     pub roll_spritesheets: HashMap<Direction, SpriteSheet>,
+    #[new(value = "{
+        let mut temp_map = hashmap! {};
+
+        for dir in &CARDINAL_DIRECTIONS {
+            temp_map.insert(
+                dir.0,
+                SpriteSheet::new(
+                    get_image_owned(format!(\"./assets/player/swing/swing_{}.png\", dir.1)),
+                    4,
+                    0.1
+                ),
+            );
+        }
+        temp_map
+    }")]
+    pub swing_spritesheets: HashMap<Direction, SpriteSheet>,
 }
 impl Player {
     pub async fn init() {
         for (_, dir) in &DIRECTIONS {
             load_image_owned(format!("./assets/player/movement/move_{}.png", dir)).await;
             load_image_owned(format!("./assets/player/movement/roll_{}.png", dir)).await;
+        }
+
+        for (_, dir) in &CARDINAL_DIRECTIONS {
+            load_image_owned(format!("./assets/player/swing/swing_{}.png", dir)).await;
         }
     }
 

@@ -1,11 +1,14 @@
 use core::panic;
+use std::collections::HashMap;
 use std::f32::consts::PI;
 
+use lazy_static::lazy_static;
 use macroquad::prelude::{
     draw_text, draw_text_ex, measure_text, mouse_position, screen_height, screen_width, vec2,
     Color, KeyCode, TextParams, Vec2,
 };
 use macroquad::rand::gen_range;
+use maplit::hashmap;
 
 use crate::scenes::game::GAME;
 
@@ -32,7 +35,26 @@ pub const DIRECTIONS: [(Direction, &str); 8] = [
     (Direction::SA, "sa"),
     (Direction::SD, "sd"),
 ];
+pub const CARDINAL_DIRECTIONS: [(Direction, &str); 4] = [
+    (Direction::W, "w"),
+    (Direction::A, "a"),
+    (Direction::S, "s"),
+    (Direction::D, "d"),
+];
 pub const SQUARE_SIZE: f32 = 30.0;
+
+lazy_static! {
+    pub static ref ROLL_ANGLES: HashMap<Direction, f32> = hashmap! {
+        Direction::WA => deg_to_rad(225.0),
+        Direction::WD => deg_to_rad(315.0),
+        Direction::SD => deg_to_rad(45.0),
+        Direction::SA => deg_to_rad(135.0),
+        Direction::W => deg_to_rad(270.0),
+        Direction::S => deg_to_rad(90.0),
+        Direction::A => deg_to_rad(180.0),
+        Direction::D => deg_to_rad(0.0)
+    };
+}
 
 /// It takes two points, and returns the angle between them
 pub fn angle(origin: Vec2, dest: Vec2) -> f32 {
