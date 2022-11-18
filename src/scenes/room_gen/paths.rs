@@ -15,7 +15,6 @@ fn adjacent_rects(rects: &[Rect], size: usize, room: &mut [Vec<Objects>]) -> Adj
 
     let mut adjacent_rects: AdjacentRects = hashmap! {};
     for (rect_index, rect) in rects.iter().enumerate() {
-        println!("rect: {:?}", rect);
         let mut already_adjacent = vec![];
         for dir in &[(1, 0), (-1, 0), (0, 1), (0, -1)] {
             for i in 0..size / 2 {
