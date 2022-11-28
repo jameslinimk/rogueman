@@ -53,6 +53,6 @@ impl Player {
             return None;
         }
 
-        Option::from(self.guns[self.selected_gun])
+        Some(self.guns[self.selected_gun])
     }
 }

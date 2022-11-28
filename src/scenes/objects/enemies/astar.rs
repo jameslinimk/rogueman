@@ -100,7 +100,7 @@ pub fn astar(start: HashVec2, goal: HashVec2, rooms: &Vec<Vec<Objects>>) -> Opti
         parent = *grandpa.unwrap();
     }
 
-    Option::from(path)
+    Some(path)
 }
 
 #[test]

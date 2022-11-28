@@ -154,13 +154,7 @@ pub fn multiline_text(text: &str, x: f32, y: f32, font_size: u16, color: Color) 
 }
 
 pub fn multiline_text_ex(text: &str, x: f32, y: f32, font_size: u16, params: TextParams) {
-    let height = measure_text(
-        text,
-        Option::from(params.font),
-        font_size,
-        params.font_scale,
-    )
-    .height;
+    let height = measure_text(text, Some(params.font), font_size, params.font_scale).height;
     for (i, line) in text.lines().enumerate() {
         draw_text_ex(line, x, y + height * i as f32, params);
     }
@@ -176,7 +170,7 @@ macro_rules! pub_global_variable {
         pub fn $name() -> &'static mut $b {
             unsafe {
                 if $raw_name.is_none() {
-                    $raw_name = Option::from(<$b>::new())
+                    $raw_name = Some(<$b>::new())
                 }
                 return $raw_name.as_mut().unwrap();
             }

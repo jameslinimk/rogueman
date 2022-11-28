@@ -42,7 +42,7 @@ pub fn pop_random<T>(raw: &mut Vec<T>) -> Option<T> {
         return None;
     }
     let i = gen_range(0, raw.len());
-    Option::from(raw.swap_remove(i))
+    Some(raw.swap_remove(i))
 }
 
 #[macro_export]
@@ -121,7 +121,7 @@ pub fn find_rect(
         return None;
     }
 
-    Option::from(Rect::new(
+    Some(Rect::new(
         max_left as f32,
         max_top as f32,
         max_left.abs_diff(max_right) as f32,

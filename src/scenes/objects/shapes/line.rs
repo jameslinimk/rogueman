@@ -16,10 +16,10 @@ pub fn polygons_intersect(polygons: &[Vec<Vec2>; 2]) -> bool {
             for p in &polygons[0] {
                 let projected = normal.x * p.x + normal.y * p.y;
                 if min_a.is_none() || projected < min_a.unwrap() {
-                    min_a = Option::from(projected);
+                    min_a = Some(projected);
                 }
                 if max_a.is_none() || projected > max_a.unwrap() {
-                    max_a = Option::from(projected);
+                    max_a = Some(projected);
                 }
             }
 
@@ -28,10 +28,10 @@ pub fn polygons_intersect(polygons: &[Vec<Vec2>; 2]) -> bool {
             for p in &polygons[1] {
                 let projected = normal.x * p.x + normal.y * p.y;
                 if min_b.is_none() || projected < min_b.unwrap() {
-                    min_b = Option::from(projected);
+                    min_b = Some(projected);
                 }
                 if max_b.is_none() || projected > max_b.unwrap() {
-                    max_b = Option::from(projected);
+                    max_b = Some(projected);
                 }
             }
 

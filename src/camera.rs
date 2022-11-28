@@ -67,7 +67,7 @@ impl Camera {
     }
 
     pub fn set_shake(&mut self, shake: ShakeConfig) {
-        self.shake = Option::from(shake);
+        self.shake = Some(shake);
         self.shake_start = get_time();
     }
 

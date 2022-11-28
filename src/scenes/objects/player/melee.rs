@@ -21,8 +21,8 @@ impl Player {
 
         /* ----------------------------- Start of swing ----------------------------- */
         if !on_cooldown && is_mouse_button_pressed(MouseButton::Left) {
-            self.last_melee_angle = Option::from(angle(self.rect.get_center(), rel_mouse_pos()));
-            self.last_melee_line = Option::from(Line::new(
+            self.last_melee_angle = Some(angle(self.rect.get_center(), rel_mouse_pos()));
+            self.last_melee_line = Some(Line::new(
                 self.rect.get_center(),
                 project(
                     self.rect.get_center(),
@@ -97,6 +97,6 @@ impl Player {
         if self.melees.is_empty() || self.selected_melee >= self.melees.len() {
             return None;
         }
-        Option::from(self.melees[self.selected_melee])
+        Some(self.melees[self.selected_melee])
     }
 }

@@ -27,8 +27,8 @@ impl SpriteSheet {
             y,
             WHITE,
             DrawTextureParams {
-                source: Option::from(rect),
-                dest_size: Option::from(vec2(width, h * (width / w))),
+                source: Some(rect),
+                dest_size: Some(vec2(width, h * (width / w))),
                 ..DrawTextureParams::default()
             },
         );
