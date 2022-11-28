@@ -153,8 +153,8 @@ pub fn multiline_text(text: &str, x: f32, y: f32, font_size: u16, color: Color) 
     }
 }
 
-pub fn multiline_text_ex(text: &str, x: f32, y: f32, font_size: u16, params: TextParams) {
-    let height = measure_text(text, Some(params.font), font_size, params.font_scale).height;
+pub fn multiline_text_ex(text: &str, x: f32, y: f32, params: TextParams) {
+    let height = measure_text(text, Some(params.font), params.font_size, params.font_scale).height;
     for (i, line) in text.lines().enumerate() {
         draw_text_ex(line, x, y + height * i as f32, params);
     }
